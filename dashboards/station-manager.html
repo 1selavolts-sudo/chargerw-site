@@ -1,0 +1,1760 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ChargeRW Station Manager</title>
+<script src="config.js"></script>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: a light rail beside a soft blue-grey work surface, in the SELA logo colours (navy text and buttons, teal
+   links and highlights, the logo green for free and online, DM Sans for text and Space Grotesk for headings and numbers) */
+:root {
+  --bg: #F3F7FB; --surface: #FFFFFF; --surface-2: #EAF2F8;
+  --border: rgba(10,35,66,0.12); --border-strong: rgba(10,35,66,0.22);
+  --fg: #0A2342; --fg-2: #4A5D78; --fg-3: #566A87; --axis: #566A87;
+  --green: #36A142; --green-soft: #E3F4E5; --green-ink: #23772E;
+  --amber: #E89B25; --amber-soft: #FBEFD7; --amber-ink: #A06E1C;
+  --red: #DD5A46; --red-soft: #FBE4E0; --red-ink: #B23B29;
+  --blue: #1597AA; --blue-soft: #DDF5F8; --blue-ink: #0B6F7E;
+  --accent: #0E7C8C; --on-accent: #FFFFFF;
+  --ink: #0A2342; --on-ink: #FFFFFF;
+  --rail: #FFFFFF; --rail-hover: #EAF2F8; --rail-active: #DDF5F8;
+  --rail-fg: #0A2342; --rail-fg-2: #4A5D78; --rail-line: rgba(10,35,66,0.12);
+  --chart-bar: #1597AA; --chart-avg: #DD5A46; --grid: #E4ECF3;
+  --card-shadow: 0 6px 18px rgba(10,35,66,0.06);
+  --shadow: 0 16px 60px rgba(10,35,66,0.18);
+  --scrim: rgba(10,35,66,0.34);
+  --radius: 20px; --radius-sm: 12px;
+  --font-ui: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'Space Grotesk', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #061325; --surface: #0C1E35; --surface-2: #112742;
+    --border: rgba(150,190,230,0.13); --border-strong: rgba(150,190,230,0.26);
+    --fg: #E7EFF8; --fg-2: #A5B7CC; --fg-3: #8A9DB5; --axis: #8A9DB5;
+    --green-soft: rgba(67,182,73,0.18); --green-ink: #74D37C;
+    --amber-soft: rgba(240,170,69,0.16); --amber-ink: #F0C27A;
+    --red-soft: rgba(240,112,92,0.16); --red-ink: #FF9A88;
+    --blue-soft: rgba(32,198,216,0.16); --blue-ink: #6FDCE8;
+    --ink: #E7EFF8; --on-ink: #061325; --accent: #20C6D8; --on-accent: #061325;
+    --rail: #081A2E; --rail-hover: #112742; --rail-active: rgba(32,198,216,0.16);
+    --rail-fg: #E7EFF8; --rail-fg-2: #A5B7CC; --rail-line: rgba(150,190,230,0.13);
+    --chart-bar: #20C6D8; --chart-avg: #F0705C; --grid: #16304D;
+    --card-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    --shadow: 0 16px 60px rgba(0,0,0,0.45);
+    --scrim: rgba(0,0,0,0.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #061325; --surface: #0C1E35; --surface-2: #112742;
+  --border: rgba(150,190,230,0.13); --border-strong: rgba(150,190,230,0.26);
+  --fg: #E7EFF8; --fg-2: #A5B7CC; --fg-3: #8A9DB5; --axis: #8A9DB5;
+  --green-soft: rgba(67,182,73,0.18); --green-ink: #74D37C;
+  --amber-soft: rgba(240,170,69,0.16); --amber-ink: #F0C27A;
+  --red-soft: rgba(240,112,92,0.16); --red-ink: #FF9A88;
+  --blue-soft: rgba(32,198,216,0.16); --blue-ink: #6FDCE8;
+  --ink: #E7EFF8; --on-ink: #061325; --accent: #20C6D8; --on-accent: #061325;
+  --rail: #081A2E; --rail-hover: #112742; --rail-active: rgba(32,198,216,0.16);
+  --rail-fg: #E7EFF8; --rail-fg-2: #A5B7CC; --rail-line: rgba(150,190,230,0.13);
+  --chart-bar: #20C6D8; --chart-avg: #F0705C; --grid: #16304D;
+  --card-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  --shadow: 0 16px 60px rgba(0,0,0,0.45);
+  --scrim: rgba(0,0,0,0.55);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 14px/1.5 var(--font-ui); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1, h2, .brand, .tile-value { font-family: var(--font-display); }
+p { margin: 0; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.muted { color: var(--fg-2); }
+.mono { font-family: var(--font-mono); }
+.num { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ---------- shell ---------- */
+.app { display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 100%; }
+.rail {
+  background: var(--rail); color: var(--rail-fg); border-right: 1px solid var(--rail-line);
+  display: flex; flex-direction: column; gap: 26px;
+  padding-block: 22px 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: 16px;
+  overflow-y: auto;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -0.3px; }
+.brand b { color: var(--accent); font-weight: 800; }
+.brand-mark { width: 30px; height: 30px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(10,35,66,0.14); display: grid; place-items: center; }
+.brand-tag { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--rail-fg-2); border: 1px solid var(--rail-line); border-radius: 6px; padding: 2px 6px; }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  padding: 9px 10px; border: 0; border-radius: 10px; background: transparent;
+  color: var(--rail-fg-2); font-weight: 600; font-size: 14px; cursor: pointer; text-align: left;
+}
+.nav-item:hover { background: var(--rail-hover); color: var(--rail-fg); }
+.nav-item[aria-current="page"] { background: var(--rail-active); color: var(--rail-fg); }
+.nav-item svg { width: 18px; height: 18px; flex: none; }
+.live-dot { width: 18px; height: 18px; display: grid; place-items: center; flex: none; }
+.live-dot::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(12,200,123,0.22); }
+.live-dot.is-off::before { background: var(--red); box-shadow: 0 0 0 3px rgba(240,78,55,0.25); }
+.rail-foot { margin-top: auto; display: grid; gap: 14px; border-top: 1px solid var(--rail-line); padding-top: 16px; }
+.who { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--rail-hover); display: grid; place-items: center; font-weight: 700; flex: none; }
+.who-text { min-width: 0; }
+.who-name { font-weight: 600; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who-sub { font-size: 12px; color: var(--rail-fg-2); }
+.theme-btn { display: flex; align-items: center; gap: 8px; border: 1px solid var(--rail-line); background: transparent; color: var(--rail-fg-2); border-radius: 10px; padding: 7px 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.theme-btn:hover { color: var(--rail-fg); background: var(--rail-hover); }
+.main { overflow-y: auto; min-width: 0; }
+.main-inner {
+  max-width: 1180px; margin: 0 auto; display: grid; gap: 20px;
+  padding-block: 20px 56px;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.view { display: grid; gap: 20px; min-width: 0; }
+
+/* prototype controls */
+.proto { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-sm); padding: 10px 14px; display: grid; gap: 8px; background: var(--surface); }
+.proto-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--fg-2); }
+.proto-title span { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--fg-2); margin-left: 6px; }
+.proto-row { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; font-size: 13px; }
+.proto-row label { display: inline-flex; gap: 7px; align-items: center; cursor: pointer; }
+.proto-row input { accent-color: var(--accent); width: 15px; height: 15px; }
+.link-btn { border: 0; background: none; color: var(--blue-ink); font-weight: 600; cursor: pointer; padding: 2px 0; font-size: 13px; }
+.link-btn:hover { text-decoration: underline; }
+
+.page-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; }
+.page-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.page-sub { color: var(--fg-2); margin-top: 2px; }
+
+/* ---------- shared pieces ---------- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 20px; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+.card-head h2 { font-size: 16px; font-weight: 700; }
+.card-head p { color: var(--fg-2); font-size: 13px; margin-top: 2px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--fg-2); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 38px; padding: 8px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--fg);
+  font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: var(--surface-2); }
+.btn:disabled { cursor: not-allowed; opacity: 0.5; }
+.btn-primary { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+.btn-primary:hover:not(:disabled) { background: var(--ink); filter: brightness(1.18); }
+.btn-danger { background: var(--red); border-color: var(--red); color: #FFFFFF; }
+.btn-danger:hover:not(:disabled) { background: var(--red); filter: brightness(1.06); }
+.btn-ghost { border-color: transparent; background: transparent; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill-green { background: var(--green-soft); color: var(--green-ink); }
+.pill-amber { background: var(--amber-soft); color: var(--amber-ink); }
+.pill-red { background: var(--red-soft); color: var(--red-ink); }
+.pill-blue { background: var(--blue-soft); color: var(--blue-ink); }
+.pill-plain { background: var(--surface-2); color: var(--fg-2); }
+.pill-plain::before { display: none; }
+
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+.badge-green { background: var(--green-soft); color: var(--green-ink); }
+.badge-red { background: var(--red-soft); color: var(--red-ink); }
+
+.warn { display: flex; gap: 10px; align-items: flex-start; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; }
+.warn svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.warn strong { display: block; }
+.warn-amber { background: var(--amber-soft); color: var(--amber-ink); }
+.ready-note { display: grid; gap: 2px; margin-top: 10px; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; background: var(--blue-soft); color: var(--blue-ink); }
+.ready-note strong { font-size: 14px; }
+.warn-red { background: var(--red-soft); color: var(--red-ink); }
+
+.switch { position: relative; width: 46px; height: 28px; border-radius: 14px; border: 0; background: var(--border-strong); cursor: pointer; flex: none; transition: background 0.15s; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.15s; }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { transform: translateX(18px); }
+.switch:disabled { cursor: not-allowed; opacity: 0.55; }
+.switch-lg { width: 64px; height: 36px; border-radius: 18px; }
+.switch-lg::after { width: 28px; height: 28px; top: 4px; left: 4px; }
+.switch-lg[aria-checked="true"]::after { transform: translateX(28px); }
+
+/* ---------- live ---------- */
+.station-bar { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; border-radius: var(--radius); padding: 18px 20px; border: 1px solid var(--border); background: var(--surface); }
+.station-bar h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; margin-top: 2px; }
+.station-bar p.muted { margin-top: 2px; }
+.station-bar.is-offline { background: var(--red-soft); border-color: transparent; }
+.station-bar.is-offline h2 { color: var(--red-ink); }
+.station-toggle { display: flex; align-items: center; gap: 12px; font-weight: 700; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--card-shadow); padding: 16px 18px; min-width: 0; }
+.tile-label { font-size: 13px; color: var(--fg-2); font-weight: 500; }
+.tile-value { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; margin-top: 4px; line-height: 1.15; }
+.tile-value small { font-size: 14px; font-weight: 600; color: var(--fg-2); letter-spacing: 0; margin-left: 3px; }
+.tile-sub { font-size: 12px; color: var(--fg-2); margin-top: 4px; }
+
+.chargers { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.charger { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; min-width: 0; }
+.charger::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--tone, var(--border)); }
+.charger.tone-green { --tone: var(--green); }
+.charger.tone-amber { --tone: var(--amber); }
+.charger.tone-red { --tone: var(--red); }
+.charger-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; padding: 16px 18px 0 22px; }
+.charger-id { font-family: var(--font-mono); font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+.specs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.spec { font-size: 12px; font-weight: 600; color: var(--fg-2); background: var(--surface-2); border-radius: 6px; padding: 2px 8px; }
+.charger-body { padding: 14px 18px 16px 22px; display: grid; gap: 10px; flex: 1; align-content: start; }
+.state-line { font-weight: 600; }
+.driver { font-weight: 700; font-size: 15px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px; margin: 0; }
+.metrics div { background: var(--surface-2); border-radius: var(--radius-sm); padding: 8px 10px; }
+.metrics dt { font-size: 11px; color: var(--fg-2); font-weight: 600; }
+.metrics dd { margin: 2px 0 0; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.charger-foot { border-top: 1px solid var(--border); padding: 12px 18px 14px 22px; display: grid; gap: 10px; }
+.manual { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.manual .btn { white-space: normal; text-align: center; line-height: 1.2; padding: 8px 6px; min-height: 44px; }
+.manual .btn[aria-pressed="true"] { opacity: 1; cursor: default; }
+.manual .is-available[aria-pressed="true"] { background: var(--green-soft); border-color: transparent; color: var(--green-ink); }
+.manual .is-busy[aria-pressed="true"] { background: var(--amber-soft); border-color: transparent; color: var(--amber-ink); }
+.manual .is-out_of_order[aria-pressed="true"] { background: var(--red-soft); border-color: transparent; color: var(--red-ink); }
+.confirm { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px; display: grid; gap: 10px; font-size: 13px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.row-end { justify-content: flex-end; }
+
+/* ---------- sessions ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; padding: 7px 13px; font-weight: 600; font-size: 13px; color: var(--fg-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.range-caption { color: var(--fg-2); font-size: 13px; }
+.chart { position: relative; min-width: 0; outline-offset: 4px; }
+.chart svg { display: block; overflow: visible; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .axis { fill: var(--axis); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart .val { fill: var(--fg); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.chart .bar { transition: opacity 0.12s; }
+.chart .bar.partial { opacity: 0.5; }
+.chart.has-hover .bar:not(.is-hover) { opacity: 0.4; }
+.chart .avg { stroke: var(--chart-avg); stroke-width: 2; }
+.tip { position: absolute; transform: translate(-50%, calc(-100% - 10px)); background: var(--fg); color: var(--surface); border-radius: 8px; padding: 6px 10px; font-size: 12px; pointer-events: none; white-space: nowrap; display: grid; gap: 1px; box-shadow: var(--shadow); z-index: 2; }
+.tip strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--fg-2); margin-top: 10px; }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.key i.line { height: 2px; border-radius: 1px; width: 14px; }
+
+.table-wrap { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-size: 12px; font-weight: 600; color: var(--fg-2); padding: 8px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+td.r, th.r { text-align: right; }
+tfoot td { font-weight: 700; border-bottom: 0; border-top: 2px solid var(--border-strong); }
+.table-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-top: 14px; color: var(--fg-2); font-size: 13px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+
+/* ---------- forms ---------- */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 16px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .field .label { font-size: 13px; font-weight: 600; }
+.field .hint { font-size: 12px; color: var(--fg-2); }
+.input, select.input {
+  width: 100%; min-height: 40px; border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+  background: var(--surface); padding: 8px 11px; font-size: 14px;
+}
+.input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+.input[readonly] { background: var(--surface-2); color: var(--fg-2); }
+.input[aria-invalid="true"] { border-color: var(--red); }
+.err { color: var(--red-ink); font-size: 12px; font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-check { position: relative; }
+.chip-check input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.chip-check span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--border-strong); font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.chip-check input:checked + span { border-color: var(--accent); background: var(--green-soft); color: var(--green-ink); }
+.chip-check input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+ul.chips { list-style: none; margin: 0; padding: 0; }
+.chip-static { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--border-strong); font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.chip-static-on { border-color: var(--accent); background: var(--green-soft); color: var(--green-ink); }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hours { display: grid; gap: 6px; }
+.hours-row { display: grid; grid-template-columns: 52px auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
+.hours-row .input { min-height: 36px; padding: 6px 8px; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+.slot-row { display: grid; grid-template-columns: minmax(80px, 1fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(110px, 1fr) auto; gap: 8px; align-items: end; padding: 12px; background: var(--surface-2); border-radius: var(--radius-sm); }
+.slot-row .input { background: var(--surface); }
+.icon-btn { width: 40px; height: 40px; border-radius: var(--radius-sm); border: 1.5px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; color: var(--fg-2); }
+.icon-btn:hover:not(:disabled) { color: var(--red-ink); border-color: var(--red); }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.save-bar { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; box-shadow: var(--shadow); }
+.error-box { background: var(--red-soft); color: var(--red-ink); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; font-weight: 600; }
+.setting { display: flex; gap: 14px; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.setting:last-child { border-bottom: 0; padding-bottom: 0; }
+.setting:first-of-type { padding-top: 0; }
+.setting-text { min-width: 0; }
+.setting-text strong { display: block; font-weight: 600; }
+.setting-text span { font-size: 13px; color: var(--fg-2); }
+.locked { font-size: 12px; font-weight: 600; color: var(--fg-2); background: var(--surface-2); border-radius: 6px; padding: 4px 8px; white-space: nowrap; }
+.radio-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.radio-card { display: flex; gap: 8px; align-items: center; border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm); padding: 9px 12px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.radio-card:has(input:checked) { border-color: var(--accent); background: var(--green-soft); }
+.radio-card input { accent-color: var(--accent); }
+.radio-card small { color: var(--fg-2); font-weight: 500; }
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start; }
+
+/* ---------- modal & toast ---------- */
+.scrim { position: fixed; inset: 0; background: var(--scrim); display: grid; place-items: center; z-index: 50; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); overflow-y: auto; }
+.modal { width: min(480px, 100%); background: var(--surface); border-radius: var(--radius); padding: 22px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.modal h2 { font-size: 18px; font-weight: 800; }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.toasts { position: fixed; z-index: 60; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; justify-items: end; pointer-events: none; }
+.ico { display: inline-block; vertical-align: -3px; flex: none; }
+.toast { background: var(--fg); color: var(--surface); padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; box-shadow: var(--shadow); max-width: min(420px, calc(100vw - 32px)); }
+
+/* driver-app preview (the station card exactly as drivers see it) */
+.phone { width: min(360px, 100%); margin: 0 auto; border-radius: 34px; padding: 12px; background: var(--rail); }
+.phone-screen { border-radius: 24px; background: var(--bg); padding: 16px 14px 18px; display: grid; gap: 10px; }
+.phone-bar { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--fg-2); padding: 0 4px; }
+.dcard { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 16px; }
+.dcard-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.dcard-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; flex: none; }
+.dcard-meta { flex: 1; min-width: 0; }
+.dcard-name { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dcard-addr { font-size: 12px; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dcard-dist { font-size: 13px; font-weight: 700; color: var(--green-ink); white-space: nowrap; }
+.dcard-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.dcard-track { height: 5px; background: var(--surface-2); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+.dcard-track span { display: block; height: 100%; border-radius: 3px; }
+.dcard-foot { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.dbadge { padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--surface-2); color: var(--fg-2); }
+.dbadge.dc { background: var(--blue-soft); color: var(--blue-ink); }
+.dbadge.ac { background: var(--amber-soft); color: var(--amber-ink); }
+.dbadge.open { background: var(--green-soft); color: var(--green-ink); }
+.dcard-rating { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--fg-2); }
+.dclosed { background: var(--red-soft); color: var(--red-ink); border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 700; text-align: center; }
+.dnote { font-size: 12px; color: var(--fg-2); text-align: center; }
+
+/* ---------- narrow screens: the rail becomes a top bar ---------- */
+@media (max-width: 880px) {
+  .app { display: block; height: auto; }
+  .rail {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30;
+    flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 12px;
+    padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    overflow: visible;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--rail); }
+  .brand-tag { margin-left: 0; }
+  .nav { order: 3; width: 100%; flex-direction: row; overflow-x: auto; gap: 4px; scrollbar-width: none; }
+  .nav { gap: 2px; }
+  .nav-item { width: auto; white-space: nowrap; padding: 7px 9px; gap: 7px; }
+  .rail-foot { margin: 0 0 0 auto; border: 0; padding: 0; display: flex; align-items: center; gap: 8px; }
+  .who-text, .theme-label { display: none; }
+  .main { overflow: visible; }
+  .main-inner { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .chargers { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .card { padding: 16px; }
+  .table-wrap { margin: 0 -16px; padding: 0 16px; }
+  .slot-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .hours-row { grid-template-columns: 44px auto minmax(0, 1fr) minmax(0, 1fr); }
+  .hours-row .to { display: none; }
+  .tile-value { font-size: 24px; }
+}
+</style>
+
+<style>
+/* Sign-in for the live site (see "live data" in the script); the demo site never shows it */
+.gate { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: var(--bg); }
+.gate-card { width: min(380px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px; display: grid; gap: 12px; }
+.gate-card h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+.gate-card label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--fg-2); }
+.gate-card input { font: inherit; color: var(--fg); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 11px 12px; }
+.gate-note { min-height: 1.4em; font-size: 13px; color: var(--red-ink); }
+/* The demo's prototype controls are not part of the live site */
+body.live .proto { display: none !important; }
+</style>
+<div id="gate" class="gate" hidden>
+  <form class="gate-card" id="gate-form">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg width="27" height="27" viewBox="-15.5 -13.5 360 360"><defs><linearGradient id="sela-energy-1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20C6D8"/><stop offset="1" stop-color="#43B649"/></linearGradient></defs><path d="M165 4C77 4 13 62 13 145C13 214 62 258 140 273L140 226C89 214 64 187 64 147C64 93 106 53 165 53C204 53 236 71 254 101L294 77C267 31 220 4 165 4Z" fill="#0A2342"/><path d="M164 316C252 316 316 258 316 176C316 107 268 63 190 48L190 95C241 108 265 135 265 175C265 229 223 268 164 268C125 268 93 250 75 220L35 244C62 290 109 316 164 316Z" fill="#0A2342"/><path d="M184 76L112 183L163 183L137 250L224 137L172 137Z" fill="url(#sela-energy-1)"/><path d="M24 325H304" stroke="#20C6D8" stroke-width="8" stroke-linecap="round"/></svg></span><span>Charge<b>RW</b></span></div>
+    <h1>Station manager sign-in</h1>
+    <p class="muted">Use the email and password from your ChargeRW admin.</p>
+    <label>Email <input name="email" type="email" autocomplete="username" required></label>
+    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+    <p class="gate-note" id="gate-note" role="alert"></p>
+  </form>
+</div>
+
+<div class="app">
+  <aside class="rail" aria-label="ChargeRW station manager">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><svg width="27" height="27" viewBox="-15.5 -13.5 360 360"><defs><linearGradient id="sela-energy-2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20C6D8"/><stop offset="1" stop-color="#43B649"/></linearGradient></defs><path d="M165 4C77 4 13 62 13 145C13 214 62 258 140 273L140 226C89 214 64 187 64 147C64 93 106 53 165 53C204 53 236 71 254 101L294 77C267 31 220 4 165 4Z" fill="#0A2342"/><path d="M164 316C252 316 316 258 316 176C316 107 268 63 190 48L190 95C241 108 265 135 265 175C265 229 223 268 164 268C125 268 93 250 75 220L35 244C62 290 109 316 164 316Z" fill="#0A2342"/><path d="M184 76L112 183L163 183L137 250L224 137L172 137Z" fill="url(#sela-energy-2)"/><path d="M24 325H304" stroke="#20C6D8" stroke-width="8" stroke-linecap="round"/></svg></span><span>Charge<b>RW</b></span><span class="brand-tag">Station</span></div>
+    <nav class="nav" aria-label="Sections">
+      <button class="nav-item" type="button" data-tab="live"><span class="live-dot" id="live-dot" aria-hidden="true"></span>Live</button>
+      <button class="nav-item" type="button" data-tab="sessions" id="nav-sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Sessions</button>
+      <button class="nav-item" type="button" data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>Profile</button>
+      <button class="nav-item" type="button" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>Settings</button>
+    </nav>
+    <div class="rail-foot">
+      <div class="who">
+        <span class="avatar" id="who-initial" aria-hidden="true">D</span>
+        <div class="who-text"><p class="who-name" id="who-station">SELAVOLT Kigali Central</p><p class="who-sub" id="who-manager">Denys M. · Station manager</p></div>
+      </div>
+      <button class="theme-btn" id="theme-btn" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="theme-label" id="theme-label">Dark mode</span></button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="main-inner">
+      <section class="proto" aria-label="Prototype controls">
+        <p class="proto-title">Prototype controls<span>These stand in for settings the ChargeRW admin controls. They are not part of the real dashboard.</span></p>
+        <div class="proto-row">
+          <label><input type="checkbox" id="pv-financial" checked> Preview with financial tracking enabled</label>
+          <label><input type="checkbox" id="pv-history" checked> Preview with session history enabled</label>
+          <label><input type="checkbox" id="pv-ocpp"> Preview with OCPP mode enabled</label>
+          <label id="pv-drop-wrap" hidden><input type="checkbox" id="pv-drop"> Simulate OCPP disconnect</label>
+          <label><input type="checkbox" id="pv-warn"> Show warning examples</label>
+          <button type="button" class="link-btn" data-act="reset-demo">Reset demo</button>
+        </div>
+      </section>
+      <header class="page-head">
+        <div><h1 id="page-title">Live status</h1><p class="page-sub" id="page-sub"></p></div>
+      </header>
+      <div id="view" class="view"></div>
+    </div>
+  </main>
+</div>
+<div id="modal-root"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= clock: the demo opens at 18:20 today and then runs in real time ================= */
+const MIN = 60000, HOUR = 3600000, DAY = 86400000;
+const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+const T0 = TODAY.getTime();
+const OPENED_AT = T0 + (18 * 60 + 20) * MIN;
+const at = (h, m) => T0 + (h * 60 + m) * MIN;
+
+/* ================= shared demo network (same copy in all three dashboards) ================= */
+// The website and the three dashboards keep one record in this browser's storage, so a change in one tab shows in the
+// others. It has the shape of the Firestore collections it stands in for: stations, sessions and the driver profile.
+// The live site's config.js turns on the real database (see "live data" below); the demo site keeps sample data
+const LIVE = window.CHARGERW_LIVE === true;
+let liveOpen = []; // the live site: this station's charges still waiting or charging, from the database
+const NET_KEY = 'chargerw-network-v1';
+const NET_DAY = `${TODAY.getFullYear()}-${String(TODAY.getMonth() + 1).padStart(2, '0')}-${String(TODAY.getDate()).padStart(2, '0')}`;
+const parseNet = text => { try { const n = JSON.parse(text || 'null'); return n && n.v === 2 && n.day === NET_DAY ? n : null; } catch (e) { return null; } };
+const readNet = () => { try { return parseNet(localStorage.getItem(NET_KEY)); } catch (e) { return null; } };
+let NET = readNet();
+let ANCHOR = NET ? NET.anchor : Date.now(); // the real time at which the demo clock showed 18:20
+let netJson = NET ? JSON.stringify(NET) : '';
+const now = () => (LIVE ? Date.now() : OPENED_AT + (Date.now() - ANCHOR));
+// The amenity types every station chooses from. Only the admin changes this list (System → Amenities).
+const DEFAULT_AMENITIES = [
+  { key: 'Coffee', icon: 'coffee', label: 'Coffee shop' }, { key: 'WiFi', icon: 'wifi', label: 'WiFi' }, { key: 'Restroom', icon: 'restroom', label: 'Restroom' },
+  { key: 'Parking', icon: 'parking', label: 'Parking' }, { key: 'Solar', icon: 'solar', label: 'Solar powered' }, { key: 'Shopping', icon: 'shopping', label: 'Shopping nearby' },
+  { key: 'Lounge', icon: 'lounge', label: 'Lounge' },
+];
+
+/* ================= line icons ================= */
+// One line-icon set in the style of the driver app (strokes that take the text colour): icon('car'), icon('star', 12, true).
+// Amenities store an icon name; an older saved record that still holds an emoji gets its icon from the amenity's key.
+const ICON_PATHS = {
+  coffee: '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2M10 2v2M14 2v2"/>',
+  wifi: '<path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/>',
+  restroom: '<circle cx="7" cy="5" r="2"/><path d="M7 9v12M4 12h6"/><circle cx="17" cy="5" r="2"/><path d="m14 15 3-6 3 6ZM17 15v6"/>',
+  parking: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/>',
+  solar: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  shopping: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  lounge: '<path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/><path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0Z"/><path d="M4 18v2M20 18v2"/>',
+  car: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+  bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  plug: '<path d="M12 22v-5"/><path d="M9 8V2M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+  tag: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7.5" cy="7.5" r="1"/>',
+};
+const icon = (name, size = 16, filled = false) => `<svg class="ico" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ICON_PATHS.tag}</svg>`;
+const AMENITY_ICON_BY_KEY = { Coffee: 'coffee', WiFi: 'wifi', Restroom: 'restroom', Parking: 'parking', Solar: 'solar', Shopping: 'shopping', Shop: 'shopping', Lounge: 'lounge' };
+const amenityIcon = a => icon(ICON_PATHS[a.icon] ? a.icon : AMENITY_ICON_BY_KEY[a.key] || 'tag');
+function seedNet() {
+  const t = OPENED_AT;
+  const hm = (h, m) => T0 + (h * 60 + m) * MIN;
+  const week = (open, close) => Object.fromEntries(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(d => [d, { closed: false, open, close }]));
+  const daysAgo = (n, h, m) => { const d = new Date(TODAY); d.setDate(d.getDate() - n); return d.getTime() + (h * 60 + m) * MIN; };
+  const slot = (id, type, kw, connector, status, since, session = null) => ({ id, type, kw, connector, status, since, session });
+  return {
+    v: 2, day: NET_DAY, anchor: ANCHOR,
+    amenities: DEFAULT_AMENITIES.map(a => ({ ...a })),
+    driver: { id: 'jp', name: 'Jean-Pierre Habimana', phone: '+250 788 000 452', showName: true },
+    sessions: [],
+    ready: [], // drivers who picked a charger in the app and wait for its manager to start the charge
+    stations: [
+      { id: 'selavolt', name: 'SELAVOLT Kigali Central', managerId: 'm1', address: 'KN 4 Ave, City Centre', city: 'Kigali', lat: -1.9441, lng: 30.0619, rating: 4.9, distanceKm: 0.3,
+        price: 200, open24h: true, hours: week('07:00', '22:00'), amenities: ['WiFi', 'Restroom', 'Coffee'],
+        status: 'active', prevStatus: 'active', online: true, onlineSince: hm(7, 30), offline: null, flags: { financial: true, history: true, ocpp: false }, updated: t - 34 * MIN,
+        chargers: [slot('DC-1', 'DC', 120, 'CCS', 'available', hm(17, 30)),
+          slot('DC-2', 'DC', 120, 'CCS', 'busy', t - 34 * MIN, { driver: 'Jean-Pierre Habimana', driverId: 'jp', start: t - 34 * MIN, kwhAt: 22.4, at: t, kw: 40, startPct: 38, maxKwh: 44.1 })] },
+      { id: 'kigalihub', name: 'KigaliHub Fast Charge', managerId: 'm2', address: 'KG 7 Ave, Nyarugenge', city: 'Kigali', lat: -1.9480, lng: 30.0680, rating: 4.6, distanceKm: 0.8,
+        price: 180, open24h: true, hours: week('07:00', '22:00'), amenities: ['WiFi', 'Parking'],
+        status: 'active', prevStatus: 'active', online: true, onlineSince: hm(6, 0), offline: null, flags: { financial: false, history: false, ocpp: false }, updated: t - 60 * MIN,
+        chargers: [slot('A1', 'DC', 50, 'CCS', 'available', hm(14, 41)), slot('A2', 'DC', 50, 'CHAdeMO', 'available', hm(15, 51)),
+          slot('B1', 'AC', 22, 'Type2', 'busy', t - 60 * MIN, { driver: 'Aimable K.', driverId: null, start: t - 60 * MIN, kwhAt: 10.5, at: t, kw: 10.5, startPct: null, maxKwh: null }),
+          slot('B2', 'AC', 22, 'Type2', 'available', hm(11, 41))] },
+      { id: 'norrsken', name: 'Norrsken House Charging', managerId: 'm3', address: 'KG 532 St, Kacyiru', city: 'Kigali', lat: -1.9390, lng: 30.0650, rating: 4.7, distanceKm: 1.2,
+        price: 160, open24h: false, hours: { ...week('08:00', '20:00'), sat: { closed: false, open: '09:00', close: '17:00' }, sun: { closed: true, open: '09:00', close: '17:00' } },
+        amenities: ['WiFi', 'Lounge'], status: 'coming_soon', prevStatus: 'coming_soon', online: false, onlineSince: null, offline: null,
+        flags: { financial: false, history: false, ocpp: false }, updated: t - 26 * HOUR,
+        chargers: [slot('N1', 'AC', 22, 'Type2', 'available', daysAgo(6, 11, 0)), slot('N2', 'AC', 22, 'Type2', 'available', daysAgo(6, 11, 0)),
+          slot('N3', 'AC', 22, 'Type2', 'out_of_order', t - 26 * HOUR)] },
+    ],
+  };
+}
+function saveNet() {
+  if (LIVE) return; // the live site saves to the database instead
+  const text = JSON.stringify(NET);
+  if (text === netJson) return;
+  netJson = text;
+  try { localStorage.setItem(NET_KEY, text); } catch (e) { /* storage blocked: this tab keeps working on its own */ }
+}
+function resetNet() { ANCHOR = Date.now(); NET = seedNet(); saveNet(); }
+if (!NET) { NET = seedNet(); saveNet(); }
+// Another tab changed the network: take its version (a reset elsewhere brings a new clock anchor too)
+function onNetChange(apply) {
+  window.addEventListener('storage', ev => {
+    if (ev.key !== NET_KEY) return;
+    const n = parseNet(ev.newValue);
+    if (!n) return;
+    NET = n; ANCHOR = n.anchor; netJson = ev.newValue;
+    apply();
+  });
+}
+// Kilowatt-hours delivered so far, capped where the car's battery is full
+const liveKwh = s => (s && s.kwhAt != null ? Math.min(s.maxKwh ?? Infinity, s.kwhAt + (s.kw * (now() - s.at)) / HOUR) : null);
+
+/* ================= formatting ================= */
+const NF0 = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const NF1 = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const rwf = n => NF0.format(Math.round(n));
+const kwhFmt = n => NF1.format(n);
+const pad = n => String(n).padStart(2, '0');
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const hhmm = ts => { const d = new Date(ts); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const shortDate = ts => { const d = new Date(ts); return `${d.getDate()} ${MO[d.getMonth()]}`; };
+const dayName = ts => { const d = new Date(ts); return `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`; };
+const whenLabel = ts => ts >= T0 ? `today ${hhmm(ts)}` : ts >= T0 - DAY ? `yesterday ${hhmm(ts)}` : `${dayName(ts)}, ${hhmm(ts)}`;
+const dur = ms => { const m = Math.max(0, Math.floor(ms / MIN)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${pad(m % 60)} min`; };
+const durMin = m => m == null ? '—' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${pad(m % 60)} min`;
+const durShort = ms => { const m = Math.max(0, Math.floor(ms / MIN)); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${pad(m % 60)} m`; };
+const compact = n => n >= 1e6 ? `${+(n / 1e6).toFixed(1)}M` : n >= 1000 ? `${+(n / 1000).toFixed(n >= 1e5 ? 0 : 1)}K` : `${+n.toFixed(n % 1 ? 1 : 0)}`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const sum = (arr, f) => arr.reduce((a, x) => a + (f(x) || 0), 0);
+
+/* ================= demo data (same seeded generator as the admin dashboard) ================= */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const DRIVERS = ['Jean-Claude M.', 'Marie N.', 'Patrick K.', 'Aline U.', 'Eric B.', 'Olivier H.', 'Grace I.', 'Divine M.', 'Samuel N.', 'Clarisse U.',
+  'Emmanuel R.', 'Josiane K.', 'Fabrice T.', 'Sandrine I.', 'Innocent H.', 'Ange M.', 'Kevin M.', 'Diane U.', 'Yves G.', 'Esther A.'];
+// Completed sessions for the `days` days before today. Deterministic, so both dashboards show the same history.
+function genHistory(cfg) {
+  const rand = mulberry32(cfg.seed);
+  const out = [];
+  for (let d = cfg.days; d >= 1; d--) {
+    const day = new Date(TODAY); day.setDate(day.getDate() - d);
+    const weekend = day.getDay() === 0 || day.getDay() === 6;
+    const n = Math.max(1, Math.round(cfg.base + cfg.growth * (1 - d / cfg.days) + (weekend ? cfg.weekend : 0) + (rand() - 0.5) * 3));
+    const starts = [];
+    for (let i = 0; i < n; i++) starts.push(cfg.open + rand() * (cfg.close - cfg.open));
+    starts.sort((a, b) => a - b);
+    const free = {};
+    cfg.chargers.forEach(c => { free[c.id] = 0; });
+    for (const s0 of starts) {
+      const ch = cfg.chargers.reduce((best, c) => (free[c.id] < free[best.id] ? c : best), cfg.chargers[0]);
+      const start = Math.round(Math.max(s0, free[ch.id] + 6));
+      const kwh = Math.round((ch.type === 'DC' ? cfg.dcKwh[0] + rand() * (cfg.dcKwh[1] - cfg.dcKwh[0]) : 9 + rand() * 12) * 10) / 10;
+      const minutes = Math.max(10, Math.round((kwh / (ch.type === 'DC' ? 40 : 10.5)) * 60));
+      free[ch.id] = start + minutes;
+      const driver = rand() < 0.75 ? DRIVERS[Math.floor(rand() * DRIVERS.length)] : `•••• ${1000 + Math.floor(rand() * 9000)}`;
+      const idle = cfg.idleFees && rand() < 0.12 ? 2000 + Math.floor(rand() * 7) * 100 : 0;
+      const pending = d <= 3 && rand() < 0.1;
+      if (start + minutes >= 24 * 60) continue;
+      out.push({ ts: day.getTime() + start * MIN, charger: ch.id, driver, minutes, kwh, cost: Math.round(kwh * cfg.price) + idle, payment: pending ? 'pending' : 'paid' });
+    }
+  }
+  return out;
+}
+const SELAVOLT_HISTORY = { seed: 4101, chargers: [{ id: 'DC-1', type: 'DC' }, { id: 'DC-2', type: 'DC' }], price: 200, days: 110, base: 5, growth: 2.5, weekend: 1, open: 7 * 60, close: 21 * 60 + 30, dcKwh: [17, 38], idleFees: false };
+// Today so far. With Jean-Pierre Habimana's session still running on DC-2 that makes 7 sessions, 184.2 kWh, 36,840 RWF.
+const TODAY_DONE = [
+  ['07:52', 'DC-2', 'Olivier H.', 39, 26.0], ['09:35', 'DC-1', 'Eric B.', 47, 31.4], ['11:20', 'DC-2', 'Aline U.', 28, 18.6],
+  ['13:05', 'DC-1', 'Patrick K.', 55, 36.6], ['15:10', 'DC-2', 'Marie N.', 31, 20.8], ['16:48', 'DC-1', 'Jean-Claude M.', 42, 28.4],
+];
+const PRICE = 200;
+
+// "Show warning examples": DC-1 down for 26 hours, and Jean-Pierre parked on DC-2 for 96 minutes (his car is full by then)
+function demoChargers(withWarnings) {
+  const t = now();
+  const dc1 = withWarnings
+    ? { id: 'DC-1', type: 'DC', kw: 120, connector: 'CCS', status: 'out_of_order', since: t - 26 * HOUR, session: null }
+    : { id: 'DC-1', type: 'DC', kw: 120, connector: 'CCS', status: 'available', since: at(17, 30), session: null };
+  const busyFor = withWarnings ? 96 : 34;
+  const dc2 = { id: 'DC-2', type: 'DC', kw: 120, connector: 'CCS', status: 'busy', since: t - busyFor * MIN,
+    session: { driver: 'Jean-Pierre Habimana', driverId: 'jp', start: t - busyFor * MIN, kwhAt: 22.4 + (40 * (busyFor - 34)) / 60, at: t, kw: 40, startPct: 38, maxKwh: 44.1 } };
+  return [dc1, dc2];
+}
+
+const S = {
+  tab: 'live',
+  flags: null, // SELAVOLT's feature flags, owned by the admin, read from the shared network
+  ocppDropped: false,
+  warnings: false,
+  station: null, // SELAVOLT, read from the shared network
+  baseSessions: [],
+  manager: { name: 'Denys M.', phone: '+250 788 000 101' },
+  notif: { channel: 'whatsapp', longSession: true, ocppAlert: true, dailySummary: true },
+  sessions: [],
+  period: 'today', shown: 25, showTable: false,
+  confirm: null,
+  modal: null,
+  draft: null, draftErrors: null,
+  pw: null,
+};
+
+// This station's view of the shared network: SELAVOLT, its flags, and sessions finished today in any tab
+function pull() {
+  S.station = NET.stations.find(st => st.id === 'selavolt');
+  S.flags = S.station.flags;
+  S.sessions = [...S.baseSessions, ...NET.sessions.filter(x => x.stationId === 'selavolt')];
+  if (S.confirm && !findCharger(S.confirm)) S.confirm = null;
+}
+function resetDemo() {
+  S.baseSessions = [
+    ...genHistory(SELAVOLT_HISTORY),
+    ...TODAY_DONE.map(([t, charger, driver, minutes, kwh]) => {
+      const [h, m] = t.split(':').map(Number);
+      return { ts: at(h, m), charger, driver, minutes, kwh, cost: Math.round(kwh * PRICE), payment: 'paid' };
+    }),
+  ];
+  S.manager = { name: 'Denys M.', phone: '+250 788 000 101' };
+  S.notif = { channel: 'whatsapp', longSession: true, ocppAlert: true, dailySummary: true };
+  S.confirm = null; S.modal = null; S.draft = null; S.draftErrors = null; S.pw = null;
+  S.period = 'today'; S.shown = 25;
+  pull();
+}
+
+/* ================= derived values ================= */
+const sessionsVisible = () => S.flags.financial || S.flags.history;
+const ocppAuto = () => S.flags.ocpp && !S.ocppDropped;
+const findCharger = id => S.station.chargers.find(c => c.id === id);
+// Station managers see a driver's name only if the driver allows it; otherwise the last 4 digits of their phone
+const driverLabel = s => {
+  if (!s || !s.driver) return null;
+  if (s.driverId && s.driverId === NET.driver.id) return NET.driver.showName ? NET.driver.name : `•••• ${NET.driver.phone.replace(/\D/g, '').slice(-4)}`;
+  return s.driver;
+};
+// Drivers who picked one of this station's chargers in the app and wait for the manager to start the charge:
+// from the database on the live site, from the shared demo record otherwise
+const readyList = () => (LIVE
+  ? liveOpen.filter(s => s.status === 'waiting').map(s => ({
+    id: s.sessionId, stationId: s.stationId, chargerId: s.chargerId, driver: s.driverName, driverId: s.driverId, phone: s.driverPhone, startPct: s.startBatteryPct, at: s.at,
+  }))
+  : (NET.ready || []).filter(r => r.stationId === 'selavolt'));
+const readyFor = id => readyList().filter(r => r.chargerId === id);
+const findReady = id => readyList().find(r => r.id === id);
+// The app stamps real time; the demo dashboards run the demo clock (the live site runs on real time)
+const demoTime = realMs => (LIVE ? realMs : OPENED_AT + (realMs - ANCHOR));
+const liveSessions = () => S.station.chargers.filter(c => c.status === 'busy' && c.session).map(c => {
+  const k = liveKwh(c.session);
+  return { ts: c.session.start, charger: c.id, driver: driverLabel(c.session) || 'Not recorded', minutes: Math.floor((now() - c.session.start) / MIN), kwh: k, cost: k == null ? null : k * S.station.price, payment: 'charging', live: true };
+});
+function todayStats() {
+  const rows = [...S.sessions.filter(x => x.ts >= T0), ...liveSessions().filter(x => x.ts >= T0)];
+  return { count: rows.length, live: rows.filter(r => r.live).length, kwh: sum(rows, r => r.kwh), revenue: sum(rows, r => r.cost) };
+}
+function stationColor(st) {
+  const working = st.chargers.filter(c => c.status !== 'out_of_order');
+  const free = working.filter(c => c.status === 'available').length;
+  if (free === 0) return 'red';
+  if (free / working.length < 0.5) return 'amber';
+  return 'green';
+}
+
+/* ================= icons ================= */
+const ICON_WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+const ICON_TRASH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';
+
+/* ================= views ================= */
+const STATUS = {
+  available: { label: 'Available', tone: 'green' },
+  busy: { label: 'Busy', tone: 'amber' },
+  out_of_order: { label: 'Out of order', tone: 'red' },
+};
+const CONNECTORS = { CCS: 'CCS', CHAdeMO: 'CHAdeMO', Type2: 'Type 2' };
+
+function viewLive() {
+  const st = S.station, t = todayStats();
+  const tiles = [
+    tile('Sessions today', `${t.count}`, t.live ? `${t.count - t.live} finished · ${t.live} charging now` : 'All finished'),
+    tile('kWh today', `<span data-tick="today-kwh">${kwhFmt(t.kwh)}</span><small>kWh</small>`, 'Delivered across all chargers'),
+    S.flags.financial ? tile('Revenue today', `<span data-tick="today-rev">${rwf(t.revenue)}</span><small>RWF</small>`, `At ${st.price} RWF per kWh`) : '',
+    st.online
+      ? tile('Online since', hhmm(st.onlineSince), `<span data-tick="elapsed" data-since="${st.onlineSince}">${dur(now() - st.onlineSince)}</span> on the driver map`)
+      : tile('Online since', 'Offline', esc(st.offline.reason)),
+  ].join('');
+  return `${stationBar()}<section class="tiles" aria-label="Today">${tiles}</section>
+    <section aria-labelledby="chargers-h"><h2 id="chargers-h" class="eyebrow" style="margin-bottom:10px">Chargers · ${st.chargers.length} slots</h2>
+    <div class="chargers">${st.chargers.map(chargerCard).join('')}</div></section>`;
+}
+
+function tile(label, value, sub) {
+  return `<div class="tile"><p class="tile-label">${label}</p><p class="tile-value">${value}</p>${sub ? `<p class="tile-sub">${sub}</p>` : ''}</div>`;
+}
+
+function stationBar() {
+  const st = S.station;
+  const sw = `<span class="station-toggle"><span id="online-label">${st.online ? 'Online' : 'Offline'}</span>
+    <button type="button" class="switch switch-lg" role="switch" aria-checked="${st.online}" aria-labelledby="online-label" data-act="toggle-online"></button></span>`;
+  if (st.online) {
+    return `<section class="station-bar" aria-label="Station status"><div><p class="eyebrow">Station status</p><h2>Open to drivers</h2>
+      <p class="muted">${esc(st.name)} is on the driver map since ${hhmm(st.onlineSince)}. Switch off to close for the day, maintenance or a power cut.</p></div>${sw}</section>`;
+  }
+  return `<section class="station-bar is-offline" aria-label="Station status"><div><p class="eyebrow">Station status</p><h2>Offline · ${esc(st.offline.reason)}</h2>
+    <p class="muted">Hidden from the driver map since ${hhmm(st.offline.since)}. Drivers who open the station see “Temporarily closed”.</p></div>${sw}</section>`;
+}
+
+function chargerCard(c) {
+  const fin = S.flags.financial, t = now();
+  const s = c.session;
+  const busyMs = c.status === 'busy' ? t - (s ? s.start : c.since) : 0;
+  const longSession = c.status === 'busy' && busyMs > 90 * MIN;
+  const oooMs = c.status === 'out_of_order' ? t - c.since : 0;
+  const offline24 = c.status === 'out_of_order' && oooMs > DAY;
+  const tone = offline24 ? 'red' : longSession ? 'amber' : STATUS[c.status].tone;
+  let body;
+  if (c.status === 'busy') {
+    const k = liveKwh(s);
+    body = `<p class="driver">${s && s.driver ? esc(driverLabel(s)) : '<span class="muted">Driver not recorded</span>'}</p>
+      <dl class="metrics">
+        <div><dt>Time</dt><dd data-tick="elapsed-short" data-since="${s ? s.start : c.since}">${durShort(busyMs)}</dd></div>
+        <div><dt>kWh so far</dt><dd>${k == null ? '—' : `<span data-tick="kwh" data-charger="${c.id}">${kwhFmt(k)}</span>`}</dd></div>
+        ${fin ? `<div><dt>Cost so far (RWF)</dt><dd>${k == null ? '—' : `<span data-tick="cost" data-charger="${c.id}">${rwf(k * S.station.price)}</span>`}</dd></div>` : ''}
+      </dl>
+      ${k == null ? `<p class="muted" style="font-size:13px">${s && s.readyId ? appSessionNote(s) : 'Marked busy by hand, so energy is not metered.'}</p>` : ''}
+      ${longSession ? `<div class="warn warn-amber" role="note">${ICON_WARN}<div><strong>Long session — check charger</strong>Busy for more than 90 minutes. The car may be finished and parked.</div></div>` : ''}`;
+  } else if (c.status === 'available') {
+    body = `<p class="state-line">Ready for the next driver</p>
+      <p class="muted">Available since ${whenLabel(c.since)} · <span data-tick="elapsed" data-since="${c.since}">${dur(t - c.since)}</span></p>`;
+  } else {
+    body = `<p class="state-line">Not available to drivers</p>
+      <p class="muted">Out of order since ${whenLabel(c.since)} · <span data-tick="elapsed" data-since="${c.since}">${dur(oooMs)}</span></p>
+      ${offline24 ? `<div class="warn warn-red" role="note">${ICON_WARN}<div><strong>Offline 24h+ — needs attention</strong>Drivers have not been able to use ${c.id} for over a day.</div></div>` : ''}`;
+  }
+  // A driver who picked this charger in the app: the manager starts the charge (only a free, manual charger)
+  const ready = readyFor(c.id);
+  body += ready.map(r => `<div class="ready-note" role="note"><strong>${icon('car')} ${esc(r.driver)} is plugged in</strong>
+    <span>Picked ${esc(c.id)} in the app · battery ${r.startPct}% · since ${hhmm(demoTime(r.at))}</span></div>`).join('');
+  const readyButtons = ready.map(r => `<div class="row">${!ocppAuto() && c.status === 'available' && S.confirm !== c.id
+    ? `<button type="button" class="btn btn-primary" data-act="start-charge" data-ready="${esc(r.id)}">${icon('bolt')} Start charging for ${esc(r.driver.split(' ')[0])}</button>` : ''}
+    <button type="button" class="btn btn-ghost" data-act="clear-ready" data-ready="${esc(r.id)}">Not here</button></div>`).join('');
+  let foot;
+  if (ocppAuto()) {
+    foot = `${readyButtons}<span class="badge badge-green">Auto — OCPP connected</span><p class="muted" style="font-size:12px">Status comes from the charger itself, so there is nothing to set by hand.</p>`;
+  } else {
+    foot = `${readyButtons}${S.flags.ocpp ? '<span class="badge badge-red">OCPP disconnected — switched to manual</span>' : ''}
+      ${S.confirm === c.id ? confirmPanel(c) : manualButtons(c)}`;
+  }
+  return `<article class="charger tone-${tone}" aria-labelledby="ch-${c.id}">
+    <div class="charger-head"><div><h3 class="charger-id" id="ch-${c.id}">${esc(c.id)}</h3>
+      <div class="specs"><span class="spec">${c.type}</span><span class="spec">${c.kw} kW</span><span class="spec">${CONNECTORS[c.connector]}</span></div></div>
+      <span class="pill pill-${STATUS[c.status].tone}">${STATUS[c.status].label}</span></div>
+    <div class="charger-body">${body}</div>
+    <div class="charger-foot">${foot}</div></article>`;
+}
+
+// A charge the manager started for a driver who picked the charger in the app
+const appSessionNote = s => `Started for a driver in the app. There is no meter, so they see ${s.timeToFullMs
+  ? `your ${durMin(Math.round(s.timeToFullMs / MIN))} timer (full at ${hhmm(s.start + s.timeToFullMs)})`
+  : 'only the time charging (no timer set)'}. Mark the charger available when you unplug the car: that ends the charge in their app.`;
+
+function manualButtons(c) {
+  const actions = [['available', 'Mark Available'], ['busy', 'Mark Busy'], ['out_of_order', 'Mark Out of Order']];
+  return `<div class="manual" role="group" aria-label="Set ${c.id} status">${actions.map(([st, label]) => `<button type="button" class="btn is-${st}"
+    data-act="set-status" data-charger="${c.id}" data-status="${st}" aria-pressed="${c.status === st}"${c.status === st ? ' disabled' : ''}>${label}</button>`).join('')}</div>`;
+}
+
+function confirmPanel(c) {
+  const s = c.session;
+  let detail = 'Drivers can start charging here as soon as you confirm.';
+  if (c.status === 'busy') {
+    const k = liveKwh(s);
+    detail = `${s && s.driver ? `${esc(s.driver)}’s session` : 'The current session'} (${dur(now() - (s ? s.start : c.since))}${k != null ? `, ${kwhFmt(k)} kWh` : ''}) will be closed.`;
+  }
+  return `<div class="confirm" role="group" aria-labelledby="cf-${c.id}">
+    <p id="cf-${c.id}"><strong>Mark ${esc(c.id)} available?</strong> Check that no car is still plugged in. ${detail}</p>
+    <div class="row row-end"><button type="button" class="btn btn-ghost" data-act="cancel-confirm">Cancel</button>
+    <button type="button" class="btn btn-primary" data-act="confirm-available" data-charger="${c.id}" id="confirm-yes">Yes, mark available</button></div></div>`;
+}
+
+/* ---------- sessions ---------- */
+function periodRange(p) {
+  if (p === 'today') return { from: T0, caption: dayName(T0) };
+  if (p === 'week') {
+    const d = new Date(TODAY); d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return { from: d.getTime(), caption: d.getTime() === T0 ? `${dayName(T0)} (the week starts today)` : `${shortDate(d)} – ${shortDate(T0)}` };
+  }
+  if (p === 'month') { const d = new Date(TODAY); d.setDate(1); return { from: d.getTime(), caption: `${shortDate(d)} – ${shortDate(T0)}` }; }
+  const first = Math.min(...S.sessions.map(x => x.ts));
+  return { from: -Infinity, caption: `Since ${shortDate(first)} ${new Date(first).getFullYear()}` };
+}
+
+function viewSessions() {
+  const fin = S.flags.financial;
+  const range = periodRange(S.period);
+  const rows = [...S.sessions, ...liveSessions()].filter(r => r.ts >= range.from).sort((a, b) => b.ts - a.ts);
+  const shown = rows.slice(0, S.shown);
+  const totKwh = sum(rows, r => r.kwh), totRev = sum(rows, r => r.cost), totMin = sum(rows, r => r.minutes);
+  const periods = [['today', 'Today'], ['week', 'This week'], ['month', 'This month'], ['all', 'All time']];
+  const payPill = p => p === 'paid' ? '<span class="pill pill-green">Paid</span>' : p === 'pending' ? '<span class="pill pill-amber">Pending</span>'
+    : p === 'charging' ? '<span class="pill pill-blue">Charging</span>' : '<span class="pill pill-plain">Not metered</span>';
+  const stats = [
+    tile('Sessions', `${rows.length}`, rows.length ? `Avg ${durMin(Math.round(totMin / rows.length))} each` : 'None in this period'),
+    // Live site: the chargers are manual, with no meter, so the time charging stands in for kWh
+    LIVE ? tile('Time charging', durMin(totMin), 'Manual chargers have no meter, so no kWh')
+      : tile('kWh delivered', `${kwhFmt(totKwh)}<small>kWh</small>`, rows.length ? `Avg ${kwhFmt(totKwh / rows.length)} kWh per session` : '&nbsp;'),
+    fin ? tile('Revenue', `${rwf(totRev)}<small>RWF</small>`, `${rows.filter(r => r.payment === 'pending').length} payments pending`) : '',
+  ].join('');
+  const table = `<div class="table-wrap"><table>
+    <thead><tr><th scope="col">Date &amp; time</th><th scope="col">Charger</th><th scope="col">Driver</th><th scope="col" class="r">Duration</th><th scope="col" class="r">kWh</th>
+      ${fin ? '<th scope="col" class="r">Cost (RWF)</th><th scope="col">Payment</th>' : ''}</tr></thead>
+    <tbody>${shown.map(r => `<tr>
+      <td>${r.ts >= T0 ? 'Today' : dayName(r.ts)} · ${hhmm(r.ts)}</td><td class="mono">${esc(r.charger)}</td><td>${esc(driverLabel(r) || r.driver)}</td>
+      <td class="r">${durMin(r.minutes)}</td><td class="r">${r.kwh == null ? '—' : kwhFmt(r.kwh)}</td>
+      ${fin ? `<td class="r">${r.cost == null ? '—' : rwf(r.cost)}</td><td>${payPill(r.payment)}</td>` : ''}</tr>`).join('')
+      || `<tr><td colspan="${fin ? 7 : 5}" class="muted" style="white-space:normal">No sessions in this period yet.</td></tr>`}</tbody>
+    ${rows.length ? `<tfoot><tr><td colspan="3">Total · ${rows.length} session${rows.length === 1 ? '' : 's'}</td><td class="r">${durMin(totMin)}</td>
+      <td class="r">${kwhFmt(totKwh)}</td>${fin ? `<td class="r">${rwf(totRev)}</td><td></td>` : ''}</tr></tfoot>` : ''}
+    </table></div>
+    <div class="table-meta"><span>Showing ${shown.length} of ${rows.length}. Drivers without a name show only the last 4 digits of their phone.</span>
+      ${rows.length > shown.length ? `<button type="button" class="btn" data-act="more-rows">Show ${Math.min(25, rows.length - shown.length)} more</button>` : ''}</div>`;
+  const m = new Date(TODAY);
+  return `<div class="toolbar"><div class="seg" role="group" aria-label="Period">${periods.map(([k, l]) => `<button type="button" data-act="period" data-period="${k}" aria-pressed="${S.period === k}">${l}</button>`).join('')}</div>
+      <span class="range-caption">${esc(range.caption)}</span></div>
+    <section class="stats" aria-label="Period summary">${stats}</section>
+    ${LIVE ? '' : `<section class="card" aria-labelledby="month-h">
+      <div class="card-head"><div><h2 id="month-h">${fin ? 'Revenue' : 'Energy delivered'} per day · ${MONTHS[m.getMonth()]} ${m.getFullYear()}</h2>
+        <p>${fin ? 'RWF earned' : 'kWh delivered'} each day this month. Today’s bar is still growing.</p></div>
+        <button type="button" class="btn" data-act="toggle-table" aria-pressed="${S.showTable}">${S.showTable ? 'Hide table' : 'Show as table'}</button></div>
+      <div class="chart" data-chart="month" tabindex="0" aria-label="Daily ${fin ? 'revenue' : 'energy'} chart. Use the arrow keys to read each day."></div>
+      <div class="legend"><span class="key"><i style="background:var(--chart-bar)"></i>${fin ? 'Revenue' : 'kWh'} per day</span><span class="key"><i class="line" style="background:var(--chart-avg)"></i>Daily average of finished days</span></div>
+      ${S.showTable ? monthTable() : ''}
+    </section>`}
+    <section class="card" aria-labelledby="table-h"><div class="card-head"><div><h2 id="table-h">Sessions</h2><p>${esc(range.caption)}</p></div></div>${table}</section>`;
+}
+
+function monthSeries() {
+  const fin = S.flags.financial;
+  const days = new Date(TODAY.getFullYear(), TODAY.getMonth() + 1, 0).getDate();
+  const rows = [...S.sessions, ...liveSessions()];
+  const pts = [];
+  for (let d = 1; d <= days; d++) {
+    const start = new Date(TODAY.getFullYear(), TODAY.getMonth(), d).getTime();
+    const end = start + DAY;
+    const isToday = start === T0, future = start > T0;
+    const dayRows = rows.filter(r => r.ts >= start && r.ts < end);
+    const v = future ? null : fin ? sum(dayRows, r => r.cost) : sum(dayRows, r => r.kwh);
+    pts.push({ label: String(d), v, partial: isToday, n: dayRows.length, tip: `${dayName(start)} · ${dayRows.length} sessions${isToday ? ' so far' : ''}` });
+  }
+  const done = pts.filter(p => p.v != null && !p.partial);
+  const avg = done.length ? sum(done, p => p.v) / done.length : null;
+  return { pts, avg };
+}
+
+function monthTable() {
+  const fin = S.flags.financial;
+  const { pts, avg } = monthSeries();
+  return `<div class="table-wrap" style="margin-top:14px"><table><thead><tr><th scope="col">Day</th><th scope="col" class="r">Sessions</th><th scope="col" class="r">${fin ? 'Revenue (RWF)' : 'kWh'}</th></tr></thead>
+    <tbody>${pts.filter(p => p.v != null).map(p => `<tr><td>${esc(p.tip.split(' · ')[0])}${p.partial ? ' (so far)' : ''}</td><td class="r">${p.n}</td><td class="r">${fin ? rwf(p.v) : kwhFmt(p.v)}</td></tr>`).join('')}</tbody>
+    ${avg != null ? `<tfoot><tr><td>Daily average (finished days)</td><td></td><td class="r">${fin ? rwf(avg) : kwhFmt(avg)}</td></tr></tfoot>` : ''}</table></div>`;
+}
+
+/* ---------- profile ---------- */
+const DAYS = [['mon', 'Mon'], ['tue', 'Tue'], ['wed', 'Wed'], ['thu', 'Thu'], ['fri', 'Fri'], ['sat', 'Sat'], ['sun', 'Sun']];
+let slotKey = 0;
+
+function draftFromStation() {
+  const st = S.station;
+  return {
+    name: st.name, address: st.address, price: String(st.price), // amenities are the admin's, so they are not part of the draft
+    open24h: st.open24h, hours: JSON.parse(JSON.stringify(st.hours)),
+    chargers: st.chargers.map(c => ({ key: c.id, id: c.id, type: c.type, kw: String(c.kw), connector: c.connector })),
+  };
+}
+const comparable = d => JSON.stringify({ ...d, chargers: d.chargers.map(({ key, ...rest }) => rest) });
+const isDirty = () => S.draft && comparable(S.draft) !== comparable(draftFromStation());
+
+function viewProfile() {
+  if (!S.draft) S.draft = draftFromStation();
+  const d = S.draft, e = S.draftErrors || {};
+  const errText = k => (e[k] ? `<p class="err" id="${k}-err">${esc(e[k])}</p>` : '');
+  const inv = k => (e[k] ? ` aria-invalid="true" aria-describedby="${k}-err"` : '');
+  const busyIds = new Set(S.station.chargers.filter(c => c.status === 'busy').map(c => c.id));
+  return `<form id="profile-form" class="view" novalidate>
+    ${Object.keys(e).length ? `<div class="error-box" role="alert">Fix ${Object.keys(e).length === 1 ? 'the highlighted field' : `the ${Object.keys(e).length} highlighted fields`} before saving.</div>` : ''}
+    <section class="card" aria-labelledby="pf-basics"><div class="card-head"><div><h2 id="pf-basics">Station details</h2><p>Shown on the station card and the map.</p></div></div>
+      <div class="form-grid">
+        <div class="field"><label for="pf-name">Station name</label><input class="input" id="pf-name" data-field="name" value="${esc(d.name)}" maxlength="60"${inv('name')}>${errText('name')}</div>
+        <div class="field"><label for="pf-address">Address</label><input class="input" id="pf-address" data-field="address" value="${esc(d.address)}" maxlength="80"${inv('address')}>${errText('address')}</div>
+        <div class="field"><label for="pf-price">Price per kWh (RWF)</label><input class="input num" id="pf-price" data-field="price" inputmode="numeric" value="${esc(d.price)}"${inv('price')}>
+          <p class="hint">Drivers pay this through Mobile Money.</p>${errText('price')}</div>
+      </div></section>
+
+    <section class="card" aria-labelledby="pf-hours"><div class="card-head"><div><h2 id="pf-hours">Opening hours</h2><p>Drivers see “Open 24/7” or today’s hours.</p></div>
+      <span class="station-toggle" style="font-weight:600"><span id="pf-24-label">Open 24 hours</span>
+      <button type="button" class="switch" role="switch" id="pf-24" aria-checked="${d.open24h}" aria-labelledby="pf-24-label" data-act="toggle-24h"></button></span></div>
+      ${d.open24h ? '<p class="muted">The station is open around the clock, every day.</p>' : `<div class="hours">${DAYS.map(([k, label]) => {
+        const h = d.hours[k];
+        return `<div class="hours-row"><strong>${label}</strong>
+          <label class="check"><input type="checkbox" id="pf-${k}-closed" data-field="hours.${k}.closed"${h.closed ? ' checked' : ''}> Closed</label>
+          <input class="input num" type="time" id="pf-${k}-open" data-field="hours.${k}.open" value="${h.open}" aria-label="${label} opens"${h.closed ? ' disabled' : ''}>
+          <span class="muted to">to</span>
+          <input class="input num" type="time" id="pf-${k}-close" data-field="hours.${k}.close" value="${h.close}" aria-label="${label} closes"${h.closed ? ' disabled' : ''}></div>`;
+      }).join('')}${errText('hours')}</div>`}</section>
+
+    <section class="card" aria-labelledby="pf-amen"><div class="card-head"><div><h2 id="pf-amen">Amenities</h2><p>Drivers can filter by these.</p></div><span class="locked">${icon('lock', 13)} Admin only</span></div>
+      <ul class="chips" aria-labelledby="pf-amen">${NET.amenities.map(a => { const on = S.station.amenities.includes(a.key); return `<li class="chip-static${on ? ' chip-static-on' : ''}" data-amenity="${esc(a.key)}">${amenityIcon(a)} ${esc(a.label)}<span class="vh">${on ? ', offered' : ', not offered'}</span></li>`; }).join('')}</ul>
+      <p class="muted" style="margin-top:10px;font-size:12px">To add or remove amenities, contact your ChargeRW admin.</p></section>
+
+    <section class="card" aria-labelledby="pf-slots"><div class="card-head"><div><h2 id="pf-slots">Charger slots</h2><p>Each slot appears separately in the driver app.</p></div>
+      <button type="button" class="btn" data-act="add-slot">+ Add charger slot</button></div>
+      <div style="display:grid;gap:8px">${d.chargers.map((c, i) => `<div class="slot-row">
+        <div class="field"><label for="pf-ch-${i}-id">Charger ID</label><input class="input mono" id="pf-ch-${i}-id" data-field="charger.${i}.id" value="${esc(c.id)}" maxlength="12"${inv(`ch${i}`)}></div>
+        <div class="field"><label for="pf-ch-${i}-type">Type</label><select class="input" id="pf-ch-${i}-type" data-field="charger.${i}.type">${['DC', 'AC'].map(t => `<option${c.type === t ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
+        <div class="field"><label for="pf-ch-${i}-kw">Power (kW)</label><input class="input num" id="pf-ch-${i}-kw" data-field="charger.${i}.kw" inputmode="decimal" value="${esc(c.kw)}"></div>
+        <div class="field"><label for="pf-ch-${i}-con">Connector</label><select class="input" id="pf-ch-${i}-con" data-field="charger.${i}.connector">${Object.entries(CONNECTORS).map(([k, l]) => `<option value="${k}"${c.connector === k ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+        <button type="button" class="icon-btn" data-act="remove-slot" data-index="${i}" aria-label="Remove ${esc(c.id || 'slot')}"
+          ${busyIds.has(c.key) ? 'disabled title="A car is charging on this slot"' : d.chargers.length === 1 ? 'disabled title="Keep at least one charger slot"' : ''}>${ICON_TRASH}</button>
+        ${e[`ch${i}`] ? `<p class="err" id="ch${i}-err" style="grid-column:1/-1">${esc(e[`ch${i}`])}</p>` : ''}
+        ${busyIds.has(c.key) ? '<p class="hint" style="grid-column:1/-1;color:var(--fg-2);font-size:12px">In use right now. You can remove it after the session ends.</p>' : ''}</div>`).join('')}</div>
+      ${errText('chargers')}</section>
+
+    <div class="save-bar"><span id="dirty-note" class="muted">${isDirty() ? 'You have unsaved changes.' : 'Everything is saved. Drivers see this now.'}</span>
+      <div class="row"><button type="button" class="btn" data-act="discard"${isDirty() ? '' : ' disabled'} id="discard-btn">Discard</button>
+      <button type="button" class="btn" data-act="preview">Preview</button>
+      <button type="submit" class="btn btn-primary" id="save-btn"${isDirty() ? '' : ' disabled'}>Save and publish</button></div></div>
+  </form>`;
+}
+
+function validateDraft(d) {
+  const e = {};
+  if (!d.name.trim()) e.name = 'Enter the station name drivers will see.';
+  if (!d.address.trim()) e.address = 'Enter the street address so drivers can find you.';
+  const price = Number(d.price);
+  if (!/^\d+$/.test(d.price.trim()) || price < 50 || price > 1000) e.price = 'Enter a whole number of RWF between 50 and 1,000.';
+  if (!d.open24h) {
+    const bad = DAYS.find(([k]) => !d.hours[k].closed && (!d.hours[k].open || !d.hours[k].close || d.hours[k].open >= d.hours[k].close));
+    if (bad) e.hours = `${bad[1]}: the closing time must be after the opening time.`;
+    else if (DAYS.every(([k]) => d.hours[k].closed)) e.hours = 'Open on at least one day, or take the station offline from Live status instead.';
+  }
+  const seen = new Set();
+  d.chargers.forEach((c, i) => {
+    const id = c.id.trim().toUpperCase();
+    const kw = Number(c.kw);
+    if (!id) e[`ch${i}`] = 'Give this slot an ID, for example DC-3.';
+    else if (seen.has(id)) e[`ch${i}`] = `${id} is used twice. Each slot needs its own ID.`;
+    else if (!(kw >= 3 && kw <= 400)) e[`ch${i}`] = 'Power must be between 3 and 400 kW.';
+    seen.add(id);
+  });
+  if (!d.chargers.length) e.chargers = 'Keep at least one charger slot.';
+  return e;
+}
+
+function saveProfile() {
+  const d = S.draft;
+  const errors = validateDraft(d);
+  S.draftErrors = Object.keys(errors).length ? errors : null;
+  if (S.draftErrors) { render(); const first = document.querySelector('[aria-invalid="true"]'); if (first) first.focus(); return; }
+  const st = S.station;
+  st.name = d.name.trim(); st.address = d.address.trim(); st.price = Number(d.price);
+  st.open24h = d.open24h; st.hours = JSON.parse(JSON.stringify(d.hours));
+  st.chargers = d.chargers.map(c => {
+    const old = st.chargers.find(x => x.id === c.key);
+    const base = old || { status: 'available', since: now(), session: null };
+    return { ...base, id: c.id.trim().toUpperCase(), type: c.type, kw: Number(c.kw), connector: c.connector };
+  });
+  pushProfile(d, st.chargers); // live site: drivers see it as soon as the database has it
+  S.draft = null;
+  toast('Saved. Drivers see the new details now.');
+  render();
+}
+
+/* ---------- settings ---------- */
+function viewSettings() {
+  const n = S.notif, pw = S.pw || {};
+  const dataRows = [
+    S.flags.financial ? setting('Financial tracking', 'On — revenue, costs and payments are shown in this dashboard.', '<span class="locked">Contact admin to change</span>') : '',
+    S.flags.ocpp ? setting('OCPP', `On — charger status is reported automatically${S.ocppDropped ? ' (currently disconnected)' : ''}.`, '<span class="locked">Contact admin to change</span>') : '',
+  ].join('');
+  return `<div class="two-col">
+    <section class="card" aria-labelledby="acc-h"><div class="card-head"><div><h2 id="acc-h">Account</h2><p>Signed in as the manager of ${esc(S.station.name)}.</p></div></div>
+      <form id="account-form" style="display:grid;gap:14px" novalidate>
+        <div class="field"><label for="acc-name">Manager name</label><input class="input" id="acc-name" name="name" value="${esc(S.manager.name)}" maxlength="40"></div>
+        <div class="field"><label for="acc-phone">${LIVE ? 'Email' : 'Phone number'}</label><input class="input num" id="acc-phone" value="${esc(S.manager.phone)}" readonly aria-describedby="acc-phone-hint">
+          <p class="hint" id="acc-phone-hint">Contact the ChargeRW admin to change your ${LIVE ? 'email' : 'phone number'}.</p></div>
+        <div class="row"><button type="submit" class="btn btn-primary">Save name</button></div>
+      </form>
+      <form id="password-form" style="display:grid;gap:14px;margin-top:22px;border-top:1px solid var(--border);padding-top:18px" novalidate>
+        <h3 style="font-size:14px">Change password</h3>
+        <div class="field"><label for="pw-current">Current password</label><input class="input" type="password" id="pw-current" name="current" autocomplete="current-password"${pw.current ? ' aria-invalid="true" aria-describedby="pw-current-err"' : ''}>${pw.current ? `<p class="err" id="pw-current-err">${pw.current}</p>` : ''}</div>
+        <div class="field"><label for="pw-new">New password</label><input class="input" type="password" id="pw-new" name="next" autocomplete="new-password" aria-describedby="pw-new-hint${pw.next ? ' pw-new-err' : ''}"${pw.next ? ' aria-invalid="true"' : ''}>
+          <p class="hint" id="pw-new-hint">At least 8 characters.</p>${pw.next ? `<p class="err" id="pw-new-err">${pw.next}</p>` : ''}</div>
+        <div class="field"><label for="pw-confirm">Repeat new password</label><input class="input" type="password" id="pw-confirm" name="confirm" autocomplete="new-password"${pw.confirm ? ' aria-invalid="true" aria-describedby="pw-confirm-err"' : ''}>${pw.confirm ? `<p class="err" id="pw-confirm-err">${pw.confirm}</p>` : ''}</div>
+        <div class="row"><button type="submit" class="btn">Change password</button></div>
+      </form>
+    </section>
+    <div style="display:grid;gap:20px">
+      ${LIVE ? liveAlertsCard() : `<section class="card" aria-labelledby="notif-h"><div class="card-head"><div><h2 id="notif-h">Notifications</h2><p>What we send you about ${esc(S.station.name)}.</p></div></div>
+        <fieldset style="margin-bottom:16px"><legend class="label" style="font-weight:600;font-size:13px;margin-bottom:8px">Send alerts by</legend>
+          <div class="radio-row">
+            <label class="radio-card"><input type="radio" name="channel" value="whatsapp" data-act-change="channel"${n.channel === 'whatsapp' ? ' checked' : ''}> WhatsApp <small>Recommended</small></label>
+            <label class="radio-card"><input type="radio" name="channel" value="sms" data-act-change="channel"${n.channel === 'sms' ? ' checked' : ''}> SMS</label>
+          </div></fieldset>
+        ${setting('Session ended', 'A driver stopped charging. Includes kWh, cost and duration.', '<span class="locked">Always on</span>')}
+        ${setting('Long session warning', 'A charger has been busy for 90 minutes or more.', toggle('longSession', n.longSession))}
+        ${S.flags.ocpp ? setting('OCPP disconnected', 'A charger stopped reporting its status and moved to manual.', toggle('ocppAlert', n.ocppAlert)) : ''}
+        ${setting('Daily summary', 'Sessions, kWh and revenue at the end of each day.', toggle('dailySummary', n.dailySummary))}
+      </section>`}
+      <section class="card" aria-labelledby="data-h"><div class="card-head"><div><h2 id="data-h">Data &amp; privacy</h2><p>Set up for you by the ChargeRW admin.</p></div></div>
+        ${dataRows || '<p class="muted">Financial tracking and OCPP are off for this station. Contact the ChargeRW admin if you want them turned on.</p>'}
+        <p class="hint muted" style="font-size:12px;margin-top:12px">You only ever see your own station. Drivers without a saved name appear by the last 4 digits of their phone number.</p>
+      </section>
+    </div></div>`;
+}
+const setting = (title, text, control) => `<div class="setting"><div class="setting-text"><strong>${title}</strong><span>${text}</span></div>${control}</div>`;
+const TOGGLE_LABELS = { plugged: 'Driver plugged in alert', longSession: 'Long session warning', ocppAlert: 'OCPP disconnected alert', dailySummary: 'Daily summary' };
+const toggle = (key, on) => `<button type="button" class="switch" role="switch" aria-checked="${on}" data-act="notif" data-key="${key}" aria-label="${TOGGLE_LABELS[key]}"></button>`;
+
+/* ---------- modals ---------- */
+const REASONS = ['Closed for today', 'Maintenance', 'Power outage', 'Other'];
+function modalHtml() {
+  if (!S.modal) return '';
+  if (S.modal.kind === 'offline') {
+    return `<div class="scrim"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title"><form id="offline-form" style="display:grid;gap:14px" novalidate>
+      <h2 id="m-title">Take the station offline?</h2>
+      <p class="muted">${esc(S.station.name)} will disappear from the driver map. Drivers who open it see “Temporarily closed”.</p>
+      <fieldset><legend style="font-weight:600;font-size:13px;margin-bottom:8px">Reason</legend><div style="display:grid;gap:6px">
+        ${REASONS.map((r, i) => `<label class="radio-card"><input type="radio" name="reason" value="${r}"${(S.modal.reason || REASONS[0]) === r ? ' checked' : ''} data-act-change="reason"${i === 0 ? ' id="first-reason"' : ''}> ${r}</label>`).join('')}</div></fieldset>
+      <div class="field"${S.modal.reason === 'Other' ? '' : ' hidden'} id="other-wrap"><label for="other-note">Reason drivers see</label>
+        <input class="input" id="other-note" name="note" maxlength="60" placeholder="For example: Road works on KN 4 Ave"${S.modal.error ? ' aria-invalid="true" aria-describedby="other-err"' : ''}>
+        ${S.modal.error ? `<p class="err" id="other-err">${S.modal.error}</p>` : ''}</div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" data-act="close-modal">Cancel</button><button type="submit" class="btn btn-danger">Take offline</button></div>
+    </form></div></div>`;
+  }
+  if (S.modal.kind === 'preview') {
+    const d = S.draft || draftFromStation();
+    const st = S.station;
+    const chargers = d.chargers.map(c => {
+      const live = st.chargers.find(x => x.id === c.key);
+      return { type: c.type, kw: Number(c.kw) || 0, status: live ? live.status : 'available' };
+    });
+    const total = chargers.length, free = chargers.filter(c => c.status === 'available').length;
+    const tone = stationColor({ chargers });
+    const color = { green: 'var(--green)', amber: 'var(--amber)', red: 'var(--red)' }[tone];
+    const soft = { green: 'var(--green-soft)', amber: 'var(--amber-soft)', red: 'var(--red-soft)' }[tone];
+    const dc = chargers.filter(c => c.type === 'DC').map(c => c.kw);
+    const hoursText = d.open24h ? 'Open 24/7' : (() => { const k = DAYS[(TODAY.getDay() + 6) % 7][0]; const h = d.hours[k]; return h.closed ? 'Closed today' : `Today ${h.open}–${h.close}`; })();
+    return `<div class="scrim"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" style="width:min(440px,100%)">
+      <h2 id="m-title">Driver app preview</h2>
+      <p class="muted">This is the station card drivers see in the ChargeRW list${isDirty() ? ', with your unsaved changes' : ''}.</p>
+      <div class="phone"><div class="phone-screen">
+        <div class="phone-bar"><span>${hhmm(now())}</span><span>ChargeRW</span></div>
+        ${st.online ? '' : '<p class="dclosed">Temporarily closed</p>'}
+        <div class="dcard">
+          <div class="dcard-top"><div class="dcard-icon" style="background:${soft};color:${color}">${icon('bolt', 20)}</div>
+            <div class="dcard-meta"><p class="dcard-name">${esc(d.name || 'Station name')}</p><p class="dcard-addr">${icon('pin', 12)} ${esc(d.address || 'Address')}</p></div>
+            <p class="dcard-dist">${st.distanceKm} km</p></div>
+          <div class="dcard-row"><span class="muted">Availability</span><strong style="color:${color}">${free} of ${total} free</strong></div>
+          <div class="dcard-track"><span style="width:${total ? (free / total) * 100 : 0}%;background:${color}"></span></div>
+          <div class="dcard-foot">
+            ${dc.length ? `<span class="dbadge dc">${icon('bolt', 11)} DC ${Math.max(...dc)}kW</span>` : ''}
+            ${chargers.some(c => c.type === 'AC') ? `<span class="dbadge ac">${icon('plug', 11)} AC</span>` : ''}
+            ${d.open24h ? '<span class="dbadge open">24h</span>' : ''}
+            ${st.amenities.includes('Coffee') ? `<span class="dbadge">${icon('coffee', 11)} Coffee</span>` : ''}
+            <span class="dcard-rating">${icon('star', 12, true)} ${st.rating}</span></div>
+        </div>
+        <p class="dnote">${esc(`${d.price || '—'} RWF/kWh · ${hoursText}`)}${st.amenities.length ? ` · ${st.amenities.map(a => esc(a)).join(', ')}` : ''}</p>
+      </div></div>
+      <div class="modal-actions"><button type="button" class="btn" data-act="close-modal">Close preview</button></div>
+    </div></div>`;
+  }
+  if (S.modal.kind === 'start-charge') {
+    const r = findReady(S.modal.readyId);
+    const c = r && findCharger(r.chargerId);
+    const ok = c && c.status === 'available';
+    const e = S.modal.error;
+    return `<div class="scrim"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title"><form id="start-form" style="display:grid;gap:14px" novalidate>
+      <h2 id="m-title">${r ? `Start charging on ${esc(r.chargerId)}?` : 'The driver is no longer waiting'}</h2>
+      <p class="muted">${r ? `${esc(r.driver)} is plugged in with the battery at ${r.startPct}%. ` : ''}This charger is manual, so the driver sees no battery reading in the app, only the timer below if you set one.</p>
+      <div class="field"><label for="start-minutes">Time until full, in minutes (optional)</label>
+        <input class="input num" id="start-minutes" name="minutes" inputmode="numeric" placeholder="For example 45" value="${esc(S.modal.minutes || '')}"${e ? ' aria-invalid="true" aria-describedby="start-err"' : ''}>
+        <p class="hint">The driver gets an alert 5 minutes before the timer ends and when it ends. Leave it empty if you don’t know: they are alerted when you mark the charger available.</p>
+        ${e ? `<p class="err" id="start-err">${esc(e)}</p>` : ''}</div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" data-act="close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary"${ok ? '' : ' disabled'}>Start charging</button></div>
+    </form></div></div>`;
+  }
+  return '';
+}
+
+/* ================= chart ================= */
+const charts = new Map();
+const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(entries => {
+  for (const entry of entries) { const spec = charts.get(entry.target); if (spec) paintChart(entry.target, spec); }
+}) : null;
+function mountChart(el, spec) { if (!el) return; charts.set(el, spec); paintChart(el, spec); if (ro) ro.observe(el); }
+function niceScale(vmax, integer) {
+  if (!(vmax > 0)) return { top: integer ? 4 : 1, step: integer ? 1 : 0.25 };
+  const raw = vmax / 4, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  let step = [1, 2, 2.5, 5, 10].map(m => m * p).find(s => s >= raw);
+  if (integer) step = Math.max(1, Math.ceil(step));
+  return { top: Math.ceil(vmax / step) * step, step };
+}
+const barPath = (x, y, w, h, r) => {
+  r = Math.min(r, w / 2, h);
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+};
+// Bar chart with an optional reference line; hover, focus and arrow keys read each bar
+function paintChart(el, spec) {
+  const W = Math.max(260, Math.floor(el.clientWidth));
+  if (el._w === W && el._spec === spec) return;
+  el._w = W; el._spec = spec;
+  const H = spec.height || 240;
+  const M = { t: 22, r: spec.avg != null ? 70 : 14, b: 26, l: 46 };
+  const pw = W - M.l - M.r, ph = H - M.t - M.b;
+  const pts = spec.points, n = pts.length;
+  const { top, step } = niceScale(Math.max(...pts.map(p => p.v || 0), spec.avg || 0), spec.integer);
+  const y = v => M.t + ph - (v / top) * ph;
+  const band = pw / n, xc = i => M.l + band * (i + 0.5);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(spec.aria)}">`;
+  for (let v = 0; v <= top + 1e-9; v += step) {
+    s += `<line class="grid" x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${M.l - 8}" y="${y(v) + 4}" text-anchor="end">${esc(spec.tick(v))}</text>`;
+  }
+  const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 30))));
+  pts.forEach((p, i) => { if (i % every === 0) s += `<text class="axis" x="${xc(i)}" y="${H - 6}" text-anchor="middle">${esc(p.label)}</text>`; });
+  const bw = Math.max(3, Math.min(24, band * 0.62));
+  let last = -1;
+  pts.forEach((p, i) => {
+    if (p.v == null) return;
+    last = i;
+    const h = p.v > 0 ? Math.max(2, (p.v / top) * ph) : 0;
+    if (h) s += `<path class="bar${p.partial ? ' partial' : ''}" data-i="${i}" d="${barPath(xc(i) - bw / 2, M.t + ph - h, bw, h, 4)}" fill="var(${spec.color})"/>`;
+  });
+  if (last >= 0 && pts[last].v > 0) {
+    // Near the right edge the label ends at the bar instead of spilling past the chart
+    const nearEdge = xc(last) + 30 > W - M.r;
+    s += `<text class="val" x="${nearEdge ? xc(last) + bw / 2 : xc(last)}" y="${y(pts[last].v) - 7}" text-anchor="${nearEdge ? 'end' : 'middle'}">${esc(spec.tick(pts[last].v))}</text>`;
+  }
+  if (spec.avg != null) {
+    const ya = y(spec.avg);
+    s += `<line class="avg" x1="${M.l}" x2="${W - M.r + 4}" y1="${ya}" y2="${ya}"/>`;
+    s += `<text class="axis" x="${W - M.r + 8}" y="${ya - 2}">Avg</text><text class="val" x="${W - M.r + 8}" y="${ya + 12}">${esc(spec.tick(spec.avg))}</text>`;
+  }
+  s += `<rect x="${M.l}" y="${M.t}" width="${pw}" height="${ph}" fill="transparent"/></svg><div class="tip" hidden></div>`;
+  el.innerHTML = s;
+  const svg = el.querySelector('svg'), tip = el.querySelector('.tip');
+  const hide = () => { tip.hidden = true; el.classList.remove('has-hover'); el.querySelectorAll('.bar.is-hover').forEach(b => b.classList.remove('is-hover')); };
+  const show = i => {
+    const p = pts[i];
+    if (p.v == null) { hide(); return; }
+    el._i = i;
+    tip.textContent = '';
+    const strong = document.createElement('strong'); strong.textContent = spec.fmt(p.v);
+    const span = document.createElement('span'); span.textContent = p.tip;
+    tip.append(strong, span);
+    tip.hidden = false;
+    tip.style.left = `${clamp(xc(i), 80, W - 80)}px`;
+    tip.style.top = `${y(p.v)}px`;
+    el.classList.add('has-hover');
+    el.querySelectorAll('.bar').forEach(b => b.classList.toggle('is-hover', Number(b.dataset.i) === i));
+  };
+  svg.addEventListener('pointermove', ev => {
+    const r = svg.getBoundingClientRect();
+    show(clamp(Math.floor((ev.clientX - r.left - M.l) / band), 0, n - 1));
+  });
+  svg.addEventListener('pointerleave', hide);
+  el.onblur = hide;
+  el.onkeydown = ev => {
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') { if (ev.key === 'Escape') hide(); return; }
+    ev.preventDefault();
+    let i = el._i == null ? last : el._i + (ev.key === 'ArrowRight' ? 1 : -1);
+    i = clamp(i, 0, Math.max(0, last));
+    show(i);
+  };
+}
+
+/* ================= render ================= */
+const TITLES = {
+  live: ['Live status', () => `${S.station.name} · ${S.station.address}`],
+  sessions: ['Sessions', () => 'Every charge at your station'],
+  profile: ['Station profile', () => 'What drivers see in the ChargeRW app. Saved changes go live immediately.'],
+  settings: ['Settings', () => 'Your account and the alerts you receive'],
+};
+const viewEl = document.getElementById('view');
+
+function render() {
+  if (S.tab === 'sessions' && !sessionsVisible()) S.tab = 'live';
+  const active = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    if (b.dataset.tab === S.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  document.getElementById('nav-sessions').hidden = !sessionsVisible();
+  document.getElementById('live-dot').classList.toggle('is-off', !S.station.online);
+  document.getElementById('who-station').textContent = S.station.name;
+  document.getElementById('who-manager').textContent = `${S.manager.name} · Station manager`;
+  document.getElementById('who-initial').textContent = (S.manager.name.trim()[0] || 'M').toUpperCase();
+  document.getElementById('page-title').textContent = TITLES[S.tab][0];
+  document.getElementById('page-sub').textContent = TITLES[S.tab][1]();
+  document.getElementById('pv-drop-wrap').hidden = !S.flags.ocpp;
+  // The flag switches mirror the admin's settings, which may have changed in another tab
+  document.getElementById('pv-financial').checked = S.flags.financial;
+  document.getElementById('pv-history').checked = S.flags.history;
+  document.getElementById('pv-ocpp').checked = S.flags.ocpp;
+  document.getElementById('pv-drop').checked = S.ocppDropped;
+  document.getElementById('pv-warn').checked = S.warnings;
+  charts.forEach((_, el) => ro && ro.unobserve(el));
+  charts.clear();
+  viewEl.innerHTML = { live: viewLive, sessions: viewSessions, profile: viewProfile, settings: viewSettings }[S.tab]();
+  if (S.tab === 'sessions' && !LIVE) {
+    const fin = S.flags.financial, { pts, avg } = monthSeries();
+    mountChart(viewEl.querySelector('[data-chart="month"]'), {
+      points: pts, avg, color: '--chart-bar', integer: false,
+      tick: v => compact(v), fmt: v => (fin ? `${rwf(v)} RWF` : `${kwhFmt(v)} kWh`),
+      aria: `${fin ? 'Revenue' : 'Energy'} per day this month`,
+    });
+  }
+  renderModal();
+  if (active && !S.modal) { const el = document.getElementById(active); if (el && !el.disabled) el.focus({ preventScroll: true }); }
+  liveKey = warningKey();
+  saveNet();
+}
+
+function renderModal() {
+  const root = document.getElementById('modal-root');
+  const wasOpen = root.childElementCount > 0;
+  root.innerHTML = modalHtml();
+  if (S.modal && !wasOpen) {
+    const target = root.querySelector('#first-reason, input, button');
+    if (target) target.focus();
+  }
+}
+
+function openModal(m) { S.modal = m; S.modalReturn = document.activeElement; renderModal(); }
+function closeModal() {
+  S.modal = null; renderModal();
+  if (S.modalReturn && document.contains(S.modalReturn)) S.modalReturn.focus();
+}
+
+function toast(msg, ico) {
+  const box = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  if (ico) el.innerHTML = `${icon(ico, 15)} ${esc(msg)}`; else el.textContent = msg;
+  box.append(el);
+  while (box.childElementCount > 2) box.firstElementChild.remove();
+  setTimeout(() => el.remove(), 3200);
+}
+
+/* ================= live updates ================= */
+let liveKey = '';
+const warningKey = () => S.station.chargers.map(c => {
+  const t = now();
+  return `${c.id}:${c.status === 'busy' && t - (c.session ? c.session.start : c.since) > 90 * MIN ? 'L' : ''}${c.status === 'out_of_order' && t - c.since > DAY ? 'O' : ''}`;
+}).join('|');
+function tick() {
+  if (S.tab !== 'live' || !S.station) return; // the live site has no station until the manager signs in
+  if (warningKey() !== liveKey && !S.modal) { render(); return; }
+  const t = now();
+  viewEl.querySelectorAll('[data-tick="elapsed"]').forEach(el => { el.textContent = dur(t - Number(el.dataset.since)); });
+  viewEl.querySelectorAll('[data-tick="elapsed-short"]').forEach(el => { el.textContent = durShort(t - Number(el.dataset.since)); });
+  viewEl.querySelectorAll('[data-tick="kwh"]').forEach(el => { const k = liveKwh(findCharger(el.dataset.charger)?.session); if (k != null) el.textContent = kwhFmt(k); });
+  viewEl.querySelectorAll('[data-tick="cost"]').forEach(el => { const k = liveKwh(findCharger(el.dataset.charger)?.session); if (k != null) el.textContent = rwf(k * S.station.price); });
+  const ts = todayStats();
+  viewEl.querySelectorAll('[data-tick="today-kwh"]').forEach(el => { el.textContent = kwhFmt(ts.kwh); });
+  viewEl.querySelectorAll('[data-tick="today-rev"]').forEach(el => { el.textContent = rwf(ts.revenue); });
+}
+setInterval(tick, 1000);
+
+/* ================= actions ================= */
+function closeSession(c) {
+  const s = c.session;
+  if (!s) return;
+  // Live site: the charge's record ends, so the driver's app shows "Charging finished" and it joins the history
+  if (LIVE) { if (s.readyId) pushSession(s.readyId, { status: 'completed', endTime: now() }); return; }
+  const k = liveKwh(s);
+  // Finished sessions go to the shared network, so the admin and the driver's own dashboard see them too
+  NET.sessions.push({
+    id: `n${s.start}-${c.id}`, stationId: 'selavolt', ts: s.start, charger: c.id, driver: s.driver || 'Not recorded', driverId: s.driverId || null,
+    minutes: Math.max(1, Math.round((now() - s.start) / MIN)), price: S.station.price,
+    kwh: k == null ? null : Math.round(k * 10) / 10, cost: k == null ? null : Math.round(k * S.station.price), payment: k == null ? null : 'pending',
+  });
+  S.sessions = [...S.baseSessions, ...NET.sessions.filter(x => x.stationId === 'selavolt')];
+}
+// The driver picked this charger in the app and is plugged in: the manager starts the charge, with an optional timer
+function startCharge(readyId, minutes) {
+  const r = findReady(readyId);
+  const c = r && findCharger(r.chargerId);
+  if (!r || !c || c.status !== 'available') { toast('That driver is no longer waiting at a free charger.'); return; }
+  c.status = 'busy'; c.since = now();
+  c.session = { driver: r.driver, driverId: r.driverId, readyId: r.id, start: now(), kwhAt: null, at: now(), kw: 0, startPct: r.startPct, timeToFullMs: minutes ? minutes * MIN : null };
+  NET.ready = (NET.ready || []).filter(x => x.id !== readyId);
+  if (LIVE) {
+    pushSession(readyId, { status: 'charging', startTime: c.session.start, timeToFullMs: c.session.timeToFullMs });
+    pushStation();
+  }
+  toast(`Charging started on ${c.id}. ${r.driver} follows it in the app.`);
+}
+function setStatus(id, status) {
+  const c = findCharger(id);
+  if (!c || c.status === status) return;
+  if (status === 'available') { S.confirm = id; render(); const yes = document.getElementById('confirm-yes'); if (yes) yes.focus(); return; }
+  closeSession(c);
+  c.status = status; c.since = now();
+  c.session = status === 'busy' ? { driver: null, start: now(), kwhAt: null, at: now(), kw: 0 } : null;
+  pushStation();
+  S.confirm = null;
+  toast(`${c.id} marked ${STATUS[status].label.toLowerCase()}.`);
+  render();
+}
+function confirmAvailable(id) {
+  const c = findCharger(id);
+  if (!c) return;
+  closeSession(c);
+  c.status = 'available'; c.since = now(); c.session = null;
+  pushStation();
+  S.confirm = null;
+  toast(`${c.id} is available to drivers again.`);
+  render();
+}
+
+function setDraftField(field, el) {
+  const d = S.draft;
+  if (!d) return;
+  if (field.startsWith('hours.')) {
+    const [, day, key] = field.split('.');
+    d.hours[day][key] = key === 'closed' ? el.checked : el.value;
+    if (key === 'closed') { render(); return; }
+  } else if (field.startsWith('charger.')) {
+    const [, i, key] = field.split('.');
+    d.chargers[Number(i)][key] = el.value;
+  } else {
+    d[field] = el.value;
+  }
+  const dirty = isDirty();
+  document.getElementById('dirty-note').textContent = dirty ? 'You have unsaved changes.' : 'Everything is saved. Drivers see this now.';
+  document.getElementById('save-btn').disabled = !dirty;
+  document.getElementById('discard-btn').disabled = !dirty;
+}
+
+document.addEventListener('click', ev => {
+  const scrim = ev.target.classList && ev.target.classList.contains('scrim');
+  if (scrim) { closeModal(); return; }
+  const tabBtn = ev.target.closest('[data-tab]');
+  if (tabBtn) {
+    S.tab = tabBtn.dataset.tab; S.confirm = null;
+    try { localStorage.setItem('chargerw-manager-tab', S.tab); } catch (e) { /* storage unavailable */ }
+    render();
+    document.getElementById('main').scrollTop = 0;
+    window.scrollTo(0, 0);
+    return;
+  }
+  const el = ev.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+  if (act === 'set-status') setStatus(el.dataset.charger, el.dataset.status);
+  else if (act === 'confirm-available') confirmAvailable(el.dataset.charger);
+  else if (act === 'cancel-confirm') { const id = S.confirm; S.confirm = null; render(); const b = document.querySelector(`[data-charger="${id}"][data-status="available"]`); if (b) b.focus(); }
+  else if (act === 'toggle-online') {
+    if (S.station.online) openModal({ kind: 'offline', reason: REASONS[0] });
+    else { S.station.online = true; S.station.onlineSince = now(); S.station.offline = null; pushStation(); toast('Station is back on the driver map.'); render(); }
+  }
+  else if (act === 'close-modal') closeModal();
+  else if (act === 'start-charge') openModal({ kind: 'start-charge', readyId: el.dataset.ready });
+  else if (act === 'clear-ready') {
+    const r = findReady(el.dataset.ready);
+    NET.ready = (NET.ready || []).filter(x => x.id !== el.dataset.ready);
+    // Live site: the driver's app hears the charger was cleared and asks them to pick again
+    if (LIVE && r) pushSession(r.id, { status: 'cancelled', cancelledBy: 'station' });
+    render();
+    if (r) toast(`${r.driver} removed from ${r.chargerId}. Their app asks them to pick again.`);
+  }
+  else if (act === 'reset-demo') {
+    S.ocppDropped = false; S.warnings = false;
+    resetNet(); resetDemo(); S.tab = 'live'; render(); toast('Demo data reset in every open dashboard.');
+  }
+  else if (act === 'period') { S.period = el.dataset.period; S.shown = 25; render(); }
+  else if (act === 'more-rows') { S.shown += 25; render(); }
+  else if (act === 'toggle-table') { S.showTable = !S.showTable; render(); }
+  else if (act === 'toggle-24h') { S.draft.open24h = !S.draft.open24h; render(); }
+  else if (act === 'add-slot') {
+    const used = new Set(S.draft.chargers.map(c => c.id.toUpperCase()));
+    let n = 1; while (used.has(`DC-${n}`)) n++;
+    S.draft.chargers.push({ key: `new-${++slotKey}`, id: `DC-${n}`, type: 'DC', kw: '60', connector: 'CCS' });
+    render();
+    const inputs = document.querySelectorAll('[data-field$=".id"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+  else if (act === 'remove-slot') { S.draft.chargers.splice(Number(el.dataset.index), 1); S.draftErrors = null; render(); }
+  else if (act === 'discard') { S.draft = null; S.draftErrors = null; render(); toast('Changes discarded.'); }
+  else if (act === 'preview') openModal({ kind: 'preview' });
+  else if (act === 'notif') { S.notif[el.dataset.key] = !S.notif[el.dataset.key]; el.setAttribute('aria-checked', String(S.notif[el.dataset.key])); pushAlerts(); toast('Notification settings saved.'); }
+});
+
+document.addEventListener('input', ev => {
+  const field = ev.target.dataset && ev.target.dataset.field;
+  if (field && S.tab === 'profile') setDraftField(field, ev.target);
+  if (ev.target.id === 'start-minutes' && S.modal) S.modal.minutes = ev.target.value; // kept if the dialog redraws
+});
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.dataset && t.dataset.field && S.tab === 'profile' && (t.type === 'checkbox' || t.tagName === 'SELECT')) { setDraftField(t.dataset.field, t); return; }
+  if (t.dataset && t.dataset.actChange === 'channel') { S.notif.channel = t.value; toast(t.value === 'whatsapp' ? 'Alerts will come by WhatsApp.' : 'Alerts will come by SMS.'); return; }
+  if (t.dataset && t.dataset.actChange === 'reason') { S.modal.reason = t.value; S.modal.error = null; document.getElementById('other-wrap').hidden = t.value !== 'Other'; return; }
+  const flagMap = { 'pv-financial': 'financial', 'pv-history': 'history', 'pv-ocpp': 'ocpp' };
+  if (flagMap[t.id]) { S.flags[flagMap[t.id]] = t.checked; if (t.id === 'pv-ocpp' && !t.checked) { S.ocppDropped = false; document.getElementById('pv-drop').checked = false; } S.confirm = null; render(); return; }
+  if (t.id === 'pv-drop') { S.ocppDropped = t.checked; render(); return; }
+  if (t.id === 'pv-warn') { S.warnings = t.checked; S.station.chargers = demoChargers(S.warnings); S.confirm = null; S.draft = null; render(); }
+});
+
+document.addEventListener('submit', ev => {
+  ev.preventDefault();
+  const f = ev.target;
+  if (f.id === 'profile-form') saveProfile();
+  else if (f.id === 'offline-form') {
+    const reason = S.modal.reason || REASONS[0];
+    const note = (f.elements.note && f.elements.note.value || '').trim();
+    if (reason === 'Other' && !note) { S.modal.error = 'Tell drivers why, in a few words.'; renderModal(); document.getElementById('other-note').focus(); return; }
+    S.station.online = false;
+    S.station.offline = { reason: reason === 'Other' ? note : reason, since: now() };
+    pushStation();
+    S.modal = null;
+    toast('Station is offline and hidden from the driver map.');
+    render();
+  }
+  else if (f.id === 'start-form') {
+    const raw = f.elements.minutes.value.trim();
+    if (raw && !(/^\d+$/.test(raw) && Number(raw) >= 1 && Number(raw) <= 600)) {
+      S.modal.error = 'Enter whole minutes between 1 and 600, or leave it empty.'; S.modal.minutes = raw;
+      renderModal(); document.getElementById('start-minutes').focus(); return;
+    }
+    startCharge(S.modal.readyId, raw ? Number(raw) : null);
+    S.modal = null;
+    render();
+  }
+  else if (f.id === 'account-form') {
+    const name = f.elements.name.value.trim();
+    if (!name) { toast('Enter your name before saving.'); f.elements.name.focus(); return; }
+    S.manager.name = name; saveManagerName(name); render(); toast('Name saved.');
+  }
+  else if (f.id === 'password-form') {
+    const cur = f.elements.current.value, next = f.elements.next.value, conf = f.elements.confirm.value;
+    const e = {};
+    if (!cur) e.current = 'Enter your current password.';
+    if (next.length < 8) e.next = 'Use at least 8 characters.';
+    else if (next === cur) e.next = 'Choose a password you have not used here before.';
+    if (!e.next && conf !== next) e.confirm = 'The two new passwords do not match.';
+    S.pw = Object.keys(e).length ? e : null;
+    // Live site: Firebase checks the current password, then changes it (changePassword shows the result)
+    if (!S.pw && LIVE) { changePassword(cur, next); return; }
+    render();
+    if (!S.pw) toast('Password changed.');
+    else { const first = document.querySelector('#password-form [aria-invalid="true"]'); if (first) first.focus(); }
+  }
+});
+
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Escape') return;
+  if (S.modal) { closeModal(); return; }
+  if (S.confirm) { S.confirm = null; render(); }
+});
+
+/* ================= theme ================= */
+const themeBtn = document.getElementById('theme-btn');
+const isDark = () => {
+  const t = document.documentElement.getAttribute('data-theme');
+  return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+const syncThemeLabel = () => { document.getElementById('theme-label').textContent = isDark() ? 'Light mode' : 'Dark mode'; themeBtn.setAttribute('aria-label', isDark() ? 'Switch to light mode' : 'Switch to dark mode'); };
+themeBtn.addEventListener('click', () => {
+  const next = isDark() ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('chargerw-theme', next); } catch (e) { /* storage unavailable */ }
+  syncThemeLabel();
+});
+try { const saved = localStorage.getItem('chargerw-theme'); if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved); } catch (e) { /* storage unavailable */ }
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeLabel);
+syncThemeLabel();
+
+/* ================= live data (Firebase), used only on the live site ================= */
+// The manager signs in with email and password. The account's `stations` claim names their station. The dashboard
+// follows its document and its charges (sessions/{id}) live: drivers who say they are plugged in, the charges running
+// and the finished ones. Charger status, the online switch, the profile and starting, ending or clearing a charge are
+// saved back; firestore.rules allows a manager only those changes, only on their own station. All chargers are manual
+// until an OCPP server reports them, so there is no kWh, revenue or payment here yet.
+const FB_SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
+let fb = null;               // the Firebase handles, once the SDK has loaded
+let gateNote = '';           // the message under the sign-in form
+let liveStationDoc = null;   // the station document as the database last sent it
+let liveKnownWaiting = null; // drivers already announced, so a new one gets a toast
+const WEEK = Object.fromEntries(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map(d => [d, { closed: false, open: '07:00', close: '22:00' }]));
+// A running charge, in the shape the charger card draws (there is no meter, so no kWh)
+const sessionFromDoc = s => ({
+  driver: s.driverName, driverId: s.driverId, readyId: s.sessionId, start: s.startTime, kwhAt: null, at: s.startTime, kw: 0,
+  startPct: s.startBatteryPct, timeToFullMs: s.timeToFullMs ?? null,
+});
+// A station document, with its running charges on their chargers, in the shape the dashboard draws
+function fromDoc(id, d, open = []) {
+  const running = new Map(open.filter(s => s.status === 'charging').map(s => [s.chargerId, s]));
+  return {
+    id, name: d.name, address: d.address, city: d.city || 'Kigali', lat: d.lat, lng: d.lng,
+    rating: d.rating ?? 0, distanceKm: d.distanceKm ?? 0, price: d.pricePerKwh ?? 0,
+    open24h: !!d.open24h, hours: d.hours || WEEK, amenities: d.amenities || [],
+    status: d.status || 'active', prevStatus: d.status || 'active',
+    online: d.online !== false, onlineSince: d.onlineSince ?? now(),
+    offline: d.online === false ? { reason: d.offlineReason || 'Closed', since: d.offlineSince ?? now() } : null,
+    flags: { financial: false, history: true, ocpp: false }, updated: now(),
+    chargers: (d.chargers || []).map(c => ({
+      id: c.id, type: c.type, kw: c.kw, connector: c.connectorType || 'CCS', mode: c.mode || 'manual', status: c.status, since: c.since ?? now(),
+      session: running.has(c.id) ? sessionFromDoc(running.get(c.id)) : null,
+    })),
+  };
+}
+// A charger as the station document keeps it (the session lives in sessions/{id})
+const chargerDoc = c => ({ id: c.id, type: c.type, kw: c.kw, status: c.status, mode: c.mode || 'manual', connectorType: c.connector || 'CCS', since: c.since ?? now() });
+// What the live status saves: the chargers and the online switch (with the reason drivers see while it is off)
+const toDoc = st => ({
+  chargers: st.chargers.map(chargerDoc),
+  online: st.online !== false,
+  onlineSince: st.online !== false && st.onlineSince ? st.onlineSince : null,
+  offlineReason: st.online === false && st.offline ? st.offline.reason : null,
+  offlineSince: st.online === false && st.offline ? st.offline.since : null,
+  updatedAt: fb.fs.serverTimestamp(),
+});
+const notSaved = e => toast(`Not saved: ${e.code === 'permission-denied' ? 'this account cannot change that.' : e.message}`);
+function pushStation() {
+  if (!LIVE || !fb || !S.station) return;
+  fb.fs.updateDoc(fb.fs.doc(fb.db, 'stations', S.station.id), toDoc(S.station)).catch(notSaved);
+}
+// Starting, ending or clearing a driver's charge
+function pushSession(id, data) {
+  if (!LIVE || !fb) return;
+  fb.fs.updateDoc(fb.fs.doc(fb.db, 'sessions', id), { ...data, updatedAt: fb.fs.serverTimestamp() }).catch(notSaved);
+}
+// Profile → Save and publish (the amenities stay the admin's)
+function pushProfile(d, chargers) {
+  if (!LIVE || !fb || !S.station) return;
+  fb.fs.updateDoc(fb.fs.doc(fb.db, 'stations', S.station.id), {
+    name: d.name.trim(), address: d.address.trim(), pricePerKwh: Number(d.price), open24h: d.open24h,
+    hours: JSON.parse(JSON.stringify(d.hours)), chargers: chargers.map(chargerDoc), updatedAt: fb.fs.serverTimestamp(),
+  }).catch(notSaved);
+}
+// Settings → Account: the name (in the manager's record, which the admin sees too); the password is the one this
+// account signs in with
+function saveManagerName(name) {
+  if (!LIVE || !fb) return;
+  fb.fs.updateDoc(fb.fs.doc(fb.db, 'managers', fb.auth.currentUser.uid), { name, updatedAt: fb.fs.serverTimestamp() }).catch(notSaved);
+  fb.authSdk.updateProfile(fb.auth.currentUser, { displayName: name }).catch(() => {});
+}
+// Settings → SMS alerts: which ones this manager wants (functions/ sends them to the phone in their record)
+function pushAlerts() {
+  if (!LIVE || !fb) return;
+  const n = S.notif;
+  fb.fs.updateDoc(fb.fs.doc(fb.db, 'managers', fb.auth.currentUser.uid), {
+    alerts: { plugged: n.plugged !== false, longSession: n.longSession !== false, dailySummary: n.dailySummary !== false },
+    updatedAt: fb.fs.serverTimestamp(),
+  }).catch(notSaved);
+}
+// The live site's alerts card: SMS to the phone number the admin set
+function liveAlertsCard() {
+  const n = S.notif, sms = S.manager.sms;
+  return `<section class="card" aria-labelledby="notif-h"><div class="card-head"><div><h2 id="notif-h">SMS alerts</h2>
+      <p>${sms ? `Sent by SMS to ${esc(sms)}.` : 'Ask your ChargeRW admin to add your phone number to get SMS alerts.'}</p></div></div>
+    ${setting('Driver plugged in', 'A driver says they are plugged in at one of your chargers and waits for you to start the charge.', toggle('plugged', n.plugged !== false))}
+    ${setting('Long charge', 'A charge has been running for 90 minutes: the car may be full and parked.', toggle('longSession', n.longSession !== false))}
+    ${setting('Daily summary', 'At 21:00, how many charges your station had today and the time charging.', toggle('dailySummary', n.dailySummary !== false))}
+    <p class="hint muted" style="font-size:12px;margin-top:12px">To change the phone number, contact your ChargeRW admin.</p>
+  </section>`;
+}
+async function changePassword(current, next) {
+  const user = fb.auth.currentUser;
+  try {
+    await fb.authSdk.reauthenticateWithCredential(user, fb.authSdk.EmailAuthProvider.credential(user.email, current));
+    await fb.authSdk.updatePassword(user, next);
+    S.pw = null; render(); toast('Password changed.');
+  } catch (e) {
+    S.pw = ['auth/invalid-credential', 'auth/wrong-password'].includes(e.code) ? { current: 'That is not your current password.' }
+      : e.code === 'auth/weak-password' ? { next: 'Choose a stronger password.' } : { current: `Not changed: ${e.message}` };
+    render();
+    const first = document.querySelector('#password-form [aria-invalid="true"]');
+    if (first) first.focus();
+  }
+}
+
+function showGate(note) {
+  if (note !== undefined) gateNote = note;
+  document.getElementById('gate-note').textContent = gateNote;
+  document.getElementById('gate').hidden = false;
+}
+function hideGate() { gateNote = ''; document.getElementById('gate').hidden = true; }
+// Loads the Firebase SDK, shows the sign-in form, and calls onAccess(claims) once an account with the right role is in
+async function startLive(role, onAccess) {
+  document.body.classList.add('live');
+  showGate('');
+  const loading = Promise.all(['firebase-app.js', 'firebase-auth.js', 'firebase-firestore.js'].map(f => import(FB_SDK + f)))
+    .then(([appSdk, authSdk, fsSdk]) => {
+      // Its own app name gives the manager dashboard its own sign-in. The admin dashboard and the driver app share
+      // this web address, and with one shared sign-in each would see the other's account, refuse it and sign it out.
+      const app = appSdk.initializeApp(window.CHARGERW_FIREBASE, 'manager-dashboard');
+      const auth = authSdk.getAuth(app);
+      fb = { fs: fsSdk, db: fsSdk.getFirestore(app), authSdk, auth };
+      return { authSdk, auth };
+    });
+  // Listen straight away: a click before the SDK has loaded must wait for it, not send the form the plain-HTML way
+  // (which would reload the page)
+  document.getElementById('gate-form').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const f = ev.target, btn = f.querySelector('button');
+    btn.disabled = true; showGate('');
+    try {
+      const { authSdk, auth } = await loading;
+      await authSdk.signInWithEmailAndPassword(auth, f.email.value.trim(), f.password.value);
+      f.password.value = '';
+    } catch (e) {
+      showGate(['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(e.code) ? 'That email or password is not right.' : `Could not sign in: ${e.message}`);
+    } finally { btn.disabled = false; }
+  });
+  const { authSdk, auth } = await loading;
+  const out = document.createElement('button');
+  out.type = 'button'; out.className = 'theme-btn'; out.textContent = 'Sign out';
+  out.addEventListener('click', () => authSdk.signOut(auth));
+  document.querySelector('.rail-foot').append(out);
+  let signedIn = false;
+  authSdk.onAuthStateChanged(auth, async user => {
+    // Signing out reloads the page, so no listener from the old account stays behind
+    if (!user) { if (signedIn) location.reload(); else showGate(); return; }
+    // An admin has the admin claim; a manager has an active managers/{uid} record (kept by the admin dashboard)
+    let access = null, refusal = `This account cannot open the ${role === 'admin' ? 'admin' : 'station manager'} dashboard.`;
+    if (role === 'admin') {
+      const { claims } = await user.getIdTokenResult();
+      if (claims.admin === true) access = {};
+    } else {
+      const snap = await fb.fs.getDoc(fb.fs.doc(fb.db, 'managers', user.uid)).catch(() => null);
+      const record = snap && snap.exists() ? snap.data() : null;
+      if (record && record.status === 'suspended') refusal = 'This account is suspended. Contact your ChargeRW admin.';
+      if (record && record.status === 'active' && Array.isArray(record.stations) && record.stations.length) access = record;
+    }
+    if (!access) { showGate(refusal); await authSdk.signOut(auth); return; }
+    signedIn = true;
+    hideGate();
+    onAccess(access, user);
+  });
+}
+function startLiveManager() {
+  S.baseSessions = []; S.sessions = [];
+  startLive('manager', (record, user) => {
+    const id = String(record.stations[0]);
+    const { fs, db } = fb;
+    const me = fs.doc(db, 'managers', user.uid);
+    // phone shows the sign-in email in Settings; sms is the number the SMS alerts go to (set by the admin)
+    S.manager = { name: record.name || user.email.split('@')[0], phone: user.email, sms: record.phone || '' };
+    S.notif = { ...S.notif, plugged: true, longSession: true, dailySummary: true, ...(record.alerts || {}) };
+    fs.updateDoc(me, { lastLogin: fs.serverTimestamp() }).catch(() => {});
+    // The admin may suspend the account, move it to another station, or change its phone while it is open
+    fs.onSnapshot(me, snap => {
+      const r = snap.data();
+      if (!r || r.status !== 'active' || !(r.stations || []).includes(id)) { fb.authSdk.signOut(fb.auth); return; }
+      S.manager.name = r.name || S.manager.name;
+      S.manager.sms = r.phone || '';
+      S.notif = { ...S.notif, ...(r.alerts || {}) };
+      if (!S.modal && S.tab === 'settings') render();
+    }, () => fb.authSdk.signOut(fb.auth));
+    // As pull() does for the demo: the station with its running charges, its flags, and a confirm for a charger that is gone
+    const redraw = () => {
+      if (!liveStationDoc) return;
+      S.station = fromDoc(id, liveStationDoc, liveOpen);
+      S.flags = S.station.flags;
+      if (S.confirm && !findCharger(S.confirm)) S.confirm = null;
+      if (!S.modal) render();
+      else if (S.modal.kind === 'start-charge') { // the driver may have left meanwhile
+        const typing = document.activeElement && document.activeElement.id === 'start-minutes';
+        renderModal();
+        if (typing) document.getElementById('start-minutes').focus();
+      }
+    };
+    fs.onSnapshot(fs.doc(db, 'stations', id), snap => {
+      if (!snap.exists()) { toast(`Station ${id} is not in the database yet.`); return; }
+      liveStationDoc = snap.data();
+      redraw();
+    }, e => toast(`Could not load the station: ${e.message}`));
+    // Drivers who say they are plugged in, and the charges running
+    fs.onSnapshot(fs.query(fs.collection(db, 'sessions'), fs.where('stationId', '==', id), fs.where('status', 'in', ['waiting', 'charging'])), snap => {
+      liveOpen = snap.docs.map(d => ({ ...d.data(), at: d.data().createdAt?.toMillis?.() ?? Date.now() }));
+      const waiting = liveOpen.filter(s => s.status === 'waiting');
+      if (liveKnownWaiting) waiting.filter(s => !liveKnownWaiting.has(s.sessionId)).forEach(s => toast(`${s.driverName} is plugged in at ${s.chargerId}.`, 'car'));
+      liveKnownWaiting = new Set(waiting.map(s => s.sessionId));
+      redraw();
+    }, e => toast(`Could not load the charges: ${e.message}`));
+    // Finished charges, for the Sessions tab and today's numbers
+    fs.onSnapshot(fs.query(fs.collection(db, 'sessions'), fs.where('stationId', '==', id), fs.where('status', '==', 'completed')), snap => {
+      S.sessions = snap.docs.map(d => d.data()).filter(s => s.startTime && s.endTime).map(s => ({
+        id: s.sessionId, stationId: s.stationId, ts: s.startTime, charger: s.chargerId, driver: s.driverName || 'Not recorded', driverId: s.driverId,
+        minutes: Math.max(1, Math.round((s.endTime - s.startTime) / MIN)), price: s.pricePerKwh, kwh: null, cost: null, payment: null,
+      }));
+      redraw();
+    }, e => toast(`Could not load past charges: ${e.message}`));
+  }).catch(e => showGate(`Could not reach ChargeRW: ${e.message}`));
+}
+
+/* ================= start ================= */
+if (!LIVE) resetDemo();
+// A driver picking one of this station's chargers in the app (another tab) gets a heads-up
+let knownReady = new Set((NET.ready || []).map(r => r.id));
+if (!LIVE) onNetChange(() => {
+  pull();
+  (NET.ready || []).filter(r => r.stationId === 'selavolt' && !knownReady.has(r.id)).forEach(r => toast(`${r.driver} is plugged in at ${r.chargerId}.`, 'car'));
+  knownReady = new Set((NET.ready || []).map(r => r.id));
+  if (!S.modal) render();
+  else if (S.modal.kind === 'start-charge') { // the driver may have left meanwhile
+    const typing = document.activeElement && document.activeElement.id === 'start-minutes';
+    renderModal();
+    if (typing) document.getElementById('start-minutes').focus();
+  }
+});
+try { const tab = localStorage.getItem('chargerw-manager-tab'); if (TITLES[tab]) S.tab = tab; } catch (e) { /* storage unavailable */ }
+const hashTab = location.hash.replace('#', '');
+if (TITLES[hashTab]) S.tab = hashTab;
+if (LIVE) startLiveManager();
+else render();
+})();
+</script>
+</body></html>
